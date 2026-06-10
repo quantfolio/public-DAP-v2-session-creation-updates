@@ -27,10 +27,8 @@ async function fetchQuestions(sessionId: string): Promise<Question[]> {
   if (error || !data) {
     throw new Error(`Failed to load knowledge & experience questions: ${JSON.stringify(error)}`);
   }
-  // The live API wraps the payload in a `{ data: ... }` envelope that the
-  // generated types omit, so unwrap it before reading `questions`.
-  const payload = (data as { data?: typeof data }).data ?? data;
-  return (payload.questions ?? []).map((q) => ({
+  // The response is wrapped in a `{ data: ... }` envelope.
+  return (data.data.questions ?? []).map((q) => ({
     code: q.code,
     is_multi_select: q.is_multi_select,
   }));

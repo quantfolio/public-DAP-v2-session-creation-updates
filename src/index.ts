@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import express from "express";
 import { router } from "./routes.js";
 
@@ -11,6 +12,14 @@ app.get("/", (_req, res) => {
   res.json({ name: "performativ-poc", status: "ok" });
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`API listening on http://localhost:${port}`);
 });
+
+// Hot reload (vite-node --watch): close the old server before the module is
+// re-evaluated, otherwise app.listen() hits EADDRINUSE on the next reload.
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => {
+    server.close();
+  });
+}

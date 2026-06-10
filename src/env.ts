@@ -1,20 +1,13 @@
-// Loads .env (Node >=20.6 has a built-in loader) and validates required vars.
+// Loads .env (Node >=20.6 has a built-in loader) if present. All values are
+// optional — credentials can also be supplied at runtime via the login endpoint.
 try {
   process.loadEnvFile();
 } catch {
-  // No .env file present — rely on the ambient environment instead.
-}
-
-function required(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return value;
+  // No .env file — rely on the ambient environment / runtime login instead.
 }
 
 export const env = {
-  dapUri: required("dap_uri"),
-  dapClientId: required("dap_client_id"),
-  dapClientSecret: required("dap_client_secret"),
+  dapUri: process.env.dap_uri,
+  dapClientId: process.env.dap_client_id,
+  dapClientSecret: process.env.dap_client_secret,
 };

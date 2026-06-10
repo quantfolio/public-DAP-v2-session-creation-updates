@@ -1922,9 +1922,20 @@ export type AdaptationSchema = {
     name?: string;
 };
 
+export type AdviceInformationDocumentSchemaV2 = {
+    data: AdviceInformationPutSchemaV2;
+};
+
 export type AdviceInformationPutSchemaV2 = {
     advisor_notes: unknown;
     fields: {
+        [key: string]: unknown;
+    };
+};
+
+export type AdviceInformationUpdateSchemaV2 = {
+    advisor_notes?: unknown;
+    fields?: {
         [key: string]: unknown;
     };
 };
@@ -2112,29 +2123,39 @@ export type ExternalStatusLogSchema = {
     readonly to_status: string;
 };
 
-export type FinancialSituationDetailSchemaV2 = {
-    account_number?: unknown;
-    asset_class?: unknown;
-    id: string;
-    is_asset_class_not_editable?: unknown;
-    is_not_editable?: unknown;
-    title?: unknown;
-    value?: unknown;
+export type FinancialSituationDocumentSchemaV2 = {
+    data: FinancialSituationReadSchemaV2;
 };
 
-export type FinancialSituationSchemaV2 = {
+export type FinancialSituationReadSchemaV2 = {
     advisor_notes: unknown;
-    company_financial_situation: unknown;
-    person_financial_situation: unknown;
+    financial_situation: unknown;
+};
+
+export type FinancialSituationUpdateSchemaV2 = {
+    advisor_notes?: unknown;
+    company_financial_situation?: unknown;
+    person_financial_situation?: unknown;
 };
 
 export type GenericAssessmentAdaptationSchema = {
     adapted?: boolean;
 };
 
+export type GoalInformationDocumentSchemaV2 = {
+    data: GoalInformationSchemaV2;
+};
+
 export type GoalInformationSchemaV2 = {
-    advisor_notes: unknown;
-    fields: {
+    advisor_notes?: unknown;
+    fields?: {
+        [key: string]: unknown;
+    };
+};
+
+export type GoalInformationSchemaV21 = {
+    advisor_notes?: unknown;
+    fields?: {
         [key: string]: unknown;
     };
 };
@@ -2202,13 +2223,28 @@ export type InvestorSearchResponse = {
     investors?: Array<StateInvestorOutput>;
 };
 
+export type KnowledgeAndExperienceDocumentSchemaV2 = {
+    data: KnowledgeAndExperienceResponseSchemaV2;
+};
+
 export type KnowledgeAndExperienceOptionSchemaV2 = {
     readonly id: number;
     readonly label: unknown;
     readonly order: number;
 };
 
+export type KnowledgeAndExperiencePutDocumentSchemaV2 = {
+    data: KnowledgeAndExperiencePutSchemaV2;
+};
+
 export type KnowledgeAndExperiencePutSchemaV2 = {
+    advisor_notes: unknown;
+    answers: {
+        [key: string]: unknown;
+    };
+};
+
+export type KnowledgeAndExperiencePutSchemaV21 = {
     advisor_notes: unknown;
     answers: {
         [key: string]: unknown;
@@ -2331,7 +2367,17 @@ export type ReportFileMetaSchema = {
     name?: string;
 };
 
+export type RiskQuestionDocumentSchemaV2 = {
+    data: RiskQuestionSchemaV2;
+};
+
 export type RiskQuestionSchemaV2 = {
+    advisor_notes: unknown;
+    expectation_of_risk: unknown;
+    risk_strategy: unknown;
+};
+
+export type RiskQuestionSchemaV21 = {
     advisor_notes: unknown;
     expectation_of_risk: unknown;
     risk_strategy: unknown;
@@ -2390,6 +2436,7 @@ export type SessionGoalCreateRequestSchemaV2 = {
     horizon_value: number;
     icon?: unknown;
     name: string;
+    type?: unknown;
 };
 
 export type SessionGoalCreateResponseGoalSchemaV2 = {
@@ -2397,11 +2444,18 @@ export type SessionGoalCreateResponseGoalSchemaV2 = {
     readonly horizon_value: number;
     readonly icon: unknown;
     readonly id: string;
+    readonly initial_risk_class: unknown;
     readonly name: string;
+    readonly risk_class: unknown;
+    readonly type: unknown;
 };
 
-export type SessionGoalCreateResponseSchemaV2 = {
-    goal: SessionGoalCreateResponseGoalSchemaV2;
+export type SessionGoalDocumentSchemaV2 = {
+    data: SessionGoalSchemaWithDataV2;
+};
+
+export type SessionGoalMutationDocumentSchemaV2 = {
+    data: SessionGoalCreateResponseGoalSchemaV2;
 };
 
 export type SessionGoalPortfolioDataV2 = {
@@ -2423,14 +2477,14 @@ export type SessionGoalSchemaV2 = {
     readonly horizon_value: number;
     readonly id: string;
     initial_deposit_meta?: InitialDepositMetaSchema | unknown;
-    readonly initial_risk_class: string;
+    readonly initial_risk_class: unknown;
     readonly name: string;
     readonly platform_id: unknown;
     platform_questions: unknown;
     readonly platform_reasoning?: unknown;
     readonly portfolio_type: 'custom' | 'model';
     recurring_deposit_meta?: RecurringDepositMetaSchema | unknown;
-    readonly risk_class: string;
+    readonly risk_class: unknown;
     readonly risk_expectation: unknown;
     readonly risk_willingness: unknown;
 };
@@ -2441,7 +2495,7 @@ export type SessionGoalSchemaWithDataV2 = {
     readonly horizon_value: number;
     readonly id: string;
     initial_deposit_meta?: InitialDepositMetaSchema | unknown;
-    readonly initial_risk_class: string;
+    readonly initial_risk_class: unknown;
     readonly name: string;
     readonly platform_id: unknown;
     platform_questions: unknown;
@@ -2449,13 +2503,9 @@ export type SessionGoalSchemaWithDataV2 = {
     portfolio_data?: SessionGoalPortfolioDataV2;
     readonly portfolio_type: 'custom' | 'model';
     recurring_deposit_meta?: RecurringDepositMetaSchema | unknown;
-    readonly risk_class: string;
+    readonly risk_class: unknown;
     readonly risk_expectation: unknown;
     readonly risk_willingness: unknown;
-};
-
-export type SessionGoalSpecificResponseSchemaV2 = {
-    goal?: SessionGoalSchemaWithDataV2;
 };
 
 export type SessionGoalUpdateRequestSchemaV2 = {
@@ -2465,8 +2515,8 @@ export type SessionGoalUpdateRequestSchemaV2 = {
     name?: string;
 };
 
-export type SessionGoalsResponseSchemaV2 = {
-    goals: Array<SessionGoalSchemaV2>;
+export type SessionGoalsDocumentSchemaV2 = {
+    data: Array<SessionGoalSchemaV2>;
 };
 
 export type SessionInvestorCompanyContactMetaSchema = {
@@ -2539,6 +2589,7 @@ export type SessionListItemSchema = {
 
 export type SessionListMetaSchema = {
     advisors: Array<SessionListAdvisorSchema>;
+    pagination: SessionListPaginationSchema;
 };
 
 export type SessionListPaginationSchema = {
@@ -2551,7 +2602,6 @@ export type SessionListPaginationSchema = {
 export type SessionListResponseSchemaV2 = {
     data: Array<SessionListItemSchema>;
     meta: SessionListMetaSchema;
-    pagination: SessionListPaginationSchema;
 };
 
 export type SessionMetaSchema = {
@@ -2585,6 +2635,22 @@ export type SessionTransactionsDataSchema = {
 
 export type SessionTransactionsResponseSchemaV2 = {
     data: SessionTransactionsDataSchema;
+};
+
+export type SettingsItem = {
+    application?: string;
+    default?: unknown;
+    description?: unknown;
+    group?: unknown;
+    is_overruled?: boolean;
+    name?: string;
+    schema?: unknown;
+    type?: unknown;
+    value?: unknown;
+};
+
+export type SettingsResponse = {
+    settings?: Array<SettingsItem>;
 };
 
 export type StateAdvisorDetailsResponse = {
@@ -2739,6 +2805,10 @@ export type SustainabilityAlignmentSlotSchemaV2 = {
     value: unknown;
 };
 
+export type SustainabilityDocumentSchemaV2 = {
+    data: SustainabilitySchemaV2;
+};
+
 export type SustainabilityGenericSchemaV2 = {
     answer: unknown;
     comment: unknown;
@@ -2769,6 +2839,12 @@ export type SustainabilitySchema = {
 };
 
 export type SustainabilitySchemaV2 = {
+    alignment_criteria: unknown;
+    generic: SustainabilityGenericSchemaV2 | unknown;
+    preference_criteria: SustainabilityPreferenceSchemaV2 | unknown;
+};
+
+export type SustainabilitySchemaV21 = {
     alignment_criteria: unknown;
     generic: SustainabilityGenericSchemaV2 | unknown;
     preference_criteria: SustainabilityPreferenceSchemaV2 | unknown;
@@ -3003,6 +3079,10 @@ export type InvestorSearchResponseWritable = {
     investors?: Array<StateInvestorOutputWritable>;
 };
 
+export type KnowledgeAndExperienceDocumentSchemaV2Writable = {
+    [key: string]: never;
+};
+
 export type PortfolioDataItemWritable = {
     suitability?: ProductSuitability | unknown;
 };
@@ -3036,7 +3116,11 @@ export type SessionDetailResponseSchemaV2Writable = {
     meta: SessionMetaSchemaWritable;
 };
 
-export type SessionGoalCreateResponseSchemaV2Writable = {
+export type SessionGoalDocumentSchemaV2Writable = {
+    data: SessionGoalSchemaWithDataV2Writable;
+};
+
+export type SessionGoalMutationDocumentSchemaV2Writable = {
     [key: string]: never;
 };
 
@@ -3053,12 +3137,8 @@ export type SessionGoalSchemaWithDataV2Writable = {
     portfolio_data?: SessionGoalPortfolioDataV2Writable;
 };
 
-export type SessionGoalSpecificResponseSchemaV2Writable = {
-    goal?: SessionGoalSchemaWithDataV2Writable;
-};
-
-export type SessionGoalsResponseSchemaV2Writable = {
-    goals: Array<SessionGoalSchemaV2Writable>;
+export type SessionGoalsDocumentSchemaV2Writable = {
+    data: Array<SessionGoalSchemaV2Writable>;
 };
 
 export type SessionInvestorCompanyMetaSchemaWritable = {
@@ -5478,8 +5558,8 @@ export type GetV2AdviceSessionBySessionIdAdviceInformationResponses = {
 
 export type GetV2AdviceSessionBySessionIdAdviceInformationResponse = GetV2AdviceSessionBySessionIdAdviceInformationResponses[keyof GetV2AdviceSessionBySessionIdAdviceInformationResponses];
 
-export type PutV2AdviceSessionBySessionIdAdviceInformationData = {
-    body?: AdviceInformationPutSchemaV2;
+export type PatchV2AdviceSessionBySessionIdAdviceInformationData = {
+    body?: AdviceInformationUpdateSchemaV2;
     path: {
         session_id: string;
     };
@@ -5487,7 +5567,7 @@ export type PutV2AdviceSessionBySessionIdAdviceInformationData = {
     url: '/v2/advice_session/{session_id}/advice_information';
 };
 
-export type PutV2AdviceSessionBySessionIdAdviceInformationErrors = {
+export type PatchV2AdviceSessionBySessionIdAdviceInformationErrors = {
     /**
      * Validation error
      */
@@ -5502,16 +5582,16 @@ export type PutV2AdviceSessionBySessionIdAdviceInformationErrors = {
     404: HttpError;
 };
 
-export type PutV2AdviceSessionBySessionIdAdviceInformationError = PutV2AdviceSessionBySessionIdAdviceInformationErrors[keyof PutV2AdviceSessionBySessionIdAdviceInformationErrors];
+export type PatchV2AdviceSessionBySessionIdAdviceInformationError = PatchV2AdviceSessionBySessionIdAdviceInformationErrors[keyof PatchV2AdviceSessionBySessionIdAdviceInformationErrors];
 
-export type PutV2AdviceSessionBySessionIdAdviceInformationResponses = {
+export type PatchV2AdviceSessionBySessionIdAdviceInformationResponses = {
     /**
      * Successful response
      */
-    200: AdviceInformationPutSchemaV2;
+    200: AdviceInformationDocumentSchemaV2;
 };
 
-export type PutV2AdviceSessionBySessionIdAdviceInformationResponse = PutV2AdviceSessionBySessionIdAdviceInformationResponses[keyof PutV2AdviceSessionBySessionIdAdviceInformationResponses];
+export type PatchV2AdviceSessionBySessionIdAdviceInformationResponse = PatchV2AdviceSessionBySessionIdAdviceInformationResponses[keyof PatchV2AdviceSessionBySessionIdAdviceInformationResponses];
 
 export type GetV2AdviceSessionBySessionIdFinancialSituationData = {
     body?: never;
@@ -5539,13 +5619,13 @@ export type GetV2AdviceSessionBySessionIdFinancialSituationResponses = {
     /**
      * Successful response
      */
-    200: FinancialSituationSchemaV2;
+    200: FinancialSituationDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdFinancialSituationResponse = GetV2AdviceSessionBySessionIdFinancialSituationResponses[keyof GetV2AdviceSessionBySessionIdFinancialSituationResponses];
 
-export type PutV2AdviceSessionBySessionIdFinancialSituationData = {
-    body?: FinancialSituationSchemaV2;
+export type PatchV2AdviceSessionBySessionIdFinancialSituationData = {
+    body?: FinancialSituationUpdateSchemaV2;
     path: {
         session_id: string;
     };
@@ -5553,7 +5633,7 @@ export type PutV2AdviceSessionBySessionIdFinancialSituationData = {
     url: '/v2/advice_session/{session_id}/financial_situation';
 };
 
-export type PutV2AdviceSessionBySessionIdFinancialSituationErrors = {
+export type PatchV2AdviceSessionBySessionIdFinancialSituationErrors = {
     /**
      * Validation error
      */
@@ -5568,16 +5648,16 @@ export type PutV2AdviceSessionBySessionIdFinancialSituationErrors = {
     404: HttpError;
 };
 
-export type PutV2AdviceSessionBySessionIdFinancialSituationError = PutV2AdviceSessionBySessionIdFinancialSituationErrors[keyof PutV2AdviceSessionBySessionIdFinancialSituationErrors];
+export type PatchV2AdviceSessionBySessionIdFinancialSituationError = PatchV2AdviceSessionBySessionIdFinancialSituationErrors[keyof PatchV2AdviceSessionBySessionIdFinancialSituationErrors];
 
-export type PutV2AdviceSessionBySessionIdFinancialSituationResponses = {
+export type PatchV2AdviceSessionBySessionIdFinancialSituationResponses = {
     /**
      * Successful response
      */
-    200: FinancialSituationSchemaV2;
+    200: FinancialSituationDocumentSchemaV2;
 };
 
-export type PutV2AdviceSessionBySessionIdFinancialSituationResponse = PutV2AdviceSessionBySessionIdFinancialSituationResponses[keyof PutV2AdviceSessionBySessionIdFinancialSituationResponses];
+export type PatchV2AdviceSessionBySessionIdFinancialSituationResponse = PatchV2AdviceSessionBySessionIdFinancialSituationResponses[keyof PatchV2AdviceSessionBySessionIdFinancialSituationResponses];
 
 export type GetV2AdviceSessionBySessionIdGoalData = {
     body?: never;
@@ -5614,7 +5694,7 @@ export type GetV2AdviceSessionBySessionIdGoalResponses = {
     /**
      * Successful response
      */
-    200: SessionGoalsResponseSchemaV2;
+    200: SessionGoalsDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdGoalResponse = GetV2AdviceSessionBySessionIdGoalResponses[keyof GetV2AdviceSessionBySessionIdGoalResponses];
@@ -5649,7 +5729,7 @@ export type PostV2AdviceSessionBySessionIdGoalResponses = {
     /**
      * Successful response
      */
-    201: SessionGoalCreateResponseSchemaV2;
+    201: SessionGoalMutationDocumentSchemaV2;
 };
 
 export type PostV2AdviceSessionBySessionIdGoalResponse = PostV2AdviceSessionBySessionIdGoalResponses[keyof PostV2AdviceSessionBySessionIdGoalResponses];
@@ -5720,7 +5800,7 @@ export type GetV2AdviceSessionBySessionIdGoalByGoalIdResponses = {
     /**
      * Successful response
      */
-    200: SessionGoalSpecificResponseSchemaV2;
+    200: SessionGoalDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdGoalByGoalIdResponse = GetV2AdviceSessionBySessionIdGoalByGoalIdResponses[keyof GetV2AdviceSessionBySessionIdGoalByGoalIdResponses];
@@ -5756,7 +5836,7 @@ export type PatchV2AdviceSessionBySessionIdGoalByGoalIdResponses = {
     /**
      * Successful response
      */
-    200: SessionGoalCreateResponseSchemaV2;
+    200: SessionGoalMutationDocumentSchemaV2;
 };
 
 export type PatchV2AdviceSessionBySessionIdGoalByGoalIdResponse = PatchV2AdviceSessionBySessionIdGoalByGoalIdResponses[keyof PatchV2AdviceSessionBySessionIdGoalByGoalIdResponses];
@@ -5788,13 +5868,13 @@ export type GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses = {
     /**
      * Successful response
      */
-    200: GoalInformationSchemaV2;
+    200: GoalInformationDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponse = GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses[keyof GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses];
 
-export type PutV2AdviceSessionBySessionIdGoalByGoalIdInformationData = {
-    body?: GoalInformationSchemaV2;
+export type PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationData = {
+    body?: GoalInformationSchemaV21;
     path: {
         session_id: string;
         goal_id: string;
@@ -5803,7 +5883,7 @@ export type PutV2AdviceSessionBySessionIdGoalByGoalIdInformationData = {
     url: '/v2/advice_session/{session_id}/goal/{goal_id}/information';
 };
 
-export type PutV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors = {
+export type PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors = {
     /**
      * Validation error
      */
@@ -5818,16 +5898,16 @@ export type PutV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors = {
     404: HttpError;
 };
 
-export type PutV2AdviceSessionBySessionIdGoalByGoalIdInformationError = PutV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors[keyof PutV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors];
+export type PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationError = PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors[keyof PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors];
 
-export type PutV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses = {
+export type PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses = {
     /**
      * Successful response
      */
-    200: GoalInformationSchemaV2;
+    200: GoalInformationDocumentSchemaV2;
 };
 
-export type PutV2AdviceSessionBySessionIdGoalByGoalIdInformationResponse = PutV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses[keyof PutV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses];
+export type PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponse = PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses[keyof PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses];
 
 export type GetV2AdviceSessionBySessionIdKnowledgeAndExperienceData = {
     body?: never;
@@ -5864,13 +5944,13 @@ export type GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses = {
     /**
      * Successful response
      */
-    200: KnowledgeAndExperienceResponseSchemaV2;
+    200: KnowledgeAndExperienceDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponse = GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses[keyof GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses];
 
 export type PutV2AdviceSessionBySessionIdKnowledgeAndExperienceData = {
-    body?: KnowledgeAndExperiencePutSchemaV2;
+    body?: KnowledgeAndExperiencePutSchemaV21;
     path: {
         session_id: string;
     };
@@ -5899,7 +5979,7 @@ export type PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses = {
     /**
      * Successful response
      */
-    200: KnowledgeAndExperiencePutSchemaV2;
+    200: KnowledgeAndExperiencePutDocumentSchemaV2;
 };
 
 export type PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponse = PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses[keyof PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses];
@@ -5930,13 +6010,13 @@ export type GetV2AdviceSessionBySessionIdRiskQuestionResponses = {
     /**
      * Successful response
      */
-    200: RiskQuestionSchemaV2;
+    200: RiskQuestionDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdRiskQuestionResponse = GetV2AdviceSessionBySessionIdRiskQuestionResponses[keyof GetV2AdviceSessionBySessionIdRiskQuestionResponses];
 
 export type PutV2AdviceSessionBySessionIdRiskQuestionData = {
-    body?: RiskQuestionSchemaV2;
+    body?: RiskQuestionSchemaV21;
     path: {
         session_id: string;
     };
@@ -5965,7 +6045,7 @@ export type PutV2AdviceSessionBySessionIdRiskQuestionResponses = {
     /**
      * Successful response
      */
-    200: RiskQuestionSchemaV2;
+    200: RiskQuestionDocumentSchemaV2;
 };
 
 export type PutV2AdviceSessionBySessionIdRiskQuestionResponse = PutV2AdviceSessionBySessionIdRiskQuestionResponses[keyof PutV2AdviceSessionBySessionIdRiskQuestionResponses];
@@ -5996,13 +6076,13 @@ export type GetV2AdviceSessionBySessionIdSustainabilityResponses = {
     /**
      * Successful response
      */
-    200: SustainabilitySchemaV2;
+    200: SustainabilityDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdSustainabilityResponse = GetV2AdviceSessionBySessionIdSustainabilityResponses[keyof GetV2AdviceSessionBySessionIdSustainabilityResponses];
 
 export type PutV2AdviceSessionBySessionIdSustainabilityData = {
-    body?: SustainabilitySchemaV2;
+    body?: SustainabilitySchemaV21;
     path: {
         session_id: string;
     };
@@ -6031,7 +6111,7 @@ export type PutV2AdviceSessionBySessionIdSustainabilityResponses = {
     /**
      * Successful response
      */
-    200: SustainabilitySchemaV2;
+    200: SustainabilityDocumentSchemaV2;
 };
 
 export type PutV2AdviceSessionBySessionIdSustainabilityResponse = PutV2AdviceSessionBySessionIdSustainabilityResponses[keyof PutV2AdviceSessionBySessionIdSustainabilityResponses];
@@ -6066,6 +6146,37 @@ export type GetV2AdviceSessionBySessionIdTransactionsResponses = {
 };
 
 export type GetV2AdviceSessionBySessionIdTransactionsResponse = GetV2AdviceSessionBySessionIdTransactionsResponses[keyof GetV2AdviceSessionBySessionIdTransactionsResponses];
+
+export type GetV2SettingsByApplicationData = {
+    body?: never;
+    path: {
+        application: string;
+    };
+    query?: never;
+    url: '/v2/settings/{application}';
+};
+
+export type GetV2SettingsByApplicationErrors = {
+    /**
+     * Authentication error
+     */
+    401: HttpError;
+    /**
+     * Not found
+     */
+    404: HttpError;
+};
+
+export type GetV2SettingsByApplicationError = GetV2SettingsByApplicationErrors[keyof GetV2SettingsByApplicationErrors];
+
+export type GetV2SettingsByApplicationResponses = {
+    /**
+     * Successful response
+     */
+    200: SettingsResponse;
+};
+
+export type GetV2SettingsByApplicationResponse = GetV2SettingsByApplicationResponses[keyof GetV2SettingsByApplicationResponses];
 
 export type PostV1AuthTokenData = {
     body?: ClientAuthenticationPayload;

@@ -7,16 +7,16 @@ import {
   getV2AdviceSessionBySessionId,
   patchV2AdviceSessionBySessionId,
   getV2AdviceSessionBySessionIdAdviceInformation,
-  putV2AdviceSessionBySessionIdAdviceInformation,
+  patchV2AdviceSessionBySessionIdAdviceInformation,
   getV2AdviceSessionBySessionIdFinancialSituation,
-  putV2AdviceSessionBySessionIdFinancialSituation,
+  patchV2AdviceSessionBySessionIdFinancialSituation,
   getV2AdviceSessionBySessionIdGoal,
   postV2AdviceSessionBySessionIdGoal,
   getV2AdviceSessionBySessionIdGoalByGoalId,
   patchV2AdviceSessionBySessionIdGoalByGoalId,
   deleteV2AdviceSessionBySessionIdGoalByGoalId,
   getV2AdviceSessionBySessionIdGoalByGoalIdInformation,
-  putV2AdviceSessionBySessionIdGoalByGoalIdInformation,
+  patchV2AdviceSessionBySessionIdGoalByGoalIdInformation,
   getV2AdviceSessionBySessionIdKnowledgeAndExperience,
   putV2AdviceSessionBySessionIdKnowledgeAndExperience,
   getV2AdviceSessionBySessionIdRiskQuestion,
@@ -34,11 +34,11 @@ export const adviceSession = {
 
   // Advice information
   getAdviceInformation: getV2AdviceSessionBySessionIdAdviceInformation,
-  setAdviceInformation: putV2AdviceSessionBySessionIdAdviceInformation,
+  updateAdviceInformation: patchV2AdviceSessionBySessionIdAdviceInformation,
 
   // Financial situation
   getFinancialSituation: getV2AdviceSessionBySessionIdFinancialSituation,
-  setFinancialSituation: putV2AdviceSessionBySessionIdFinancialSituation,
+  updateFinancialSituation: patchV2AdviceSessionBySessionIdFinancialSituation,
 
   // Goals
   listGoals: getV2AdviceSessionBySessionIdGoal,
@@ -47,7 +47,7 @@ export const adviceSession = {
   updateGoal: patchV2AdviceSessionBySessionIdGoalByGoalId,
   deleteGoal: deleteV2AdviceSessionBySessionIdGoalByGoalId,
   getGoalInformation: getV2AdviceSessionBySessionIdGoalByGoalIdInformation,
-  setGoalInformation: putV2AdviceSessionBySessionIdGoalByGoalIdInformation,
+  updateGoalInformation: patchV2AdviceSessionBySessionIdGoalByGoalIdInformation,
 
   // Suitability inputs
   getKnowledgeAndExperience: getV2AdviceSessionBySessionIdKnowledgeAndExperience,
