@@ -27,8 +27,8 @@ async function fetchQuestions(sessionId: string): Promise<Question[]> {
   if (error || !data) {
     throw new Error(`Failed to load knowledge & experience questions: ${JSON.stringify(error)}`);
   }
-  // The response is wrapped in a `{ data: ... }` envelope.
-  return (data.data.questions ?? []).map((q) => ({
+  // The question set is now self-describing under `meta.questions`.
+  return (data.meta?.questions ?? []).map((q) => ({
     code: q.code,
     is_multi_select: q.is_multi_select,
   }));

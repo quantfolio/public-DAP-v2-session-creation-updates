@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RunButton } from "@/components/ui/run-button";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { NativeSelect as Select } from "@/components/ui/native-select";
 import {
   Card,
   CardContent,
@@ -9,8 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { JsonPreview } from "@/components/JsonPreview";
+import { PayloadTabs } from "@/components/PayloadTabs";
 import { SourceInfo } from "@/components/SourceInfo";
+import { AdvisorNotesField, type AdvisorNoteFlag } from "@/components/AdvisorNotesField";
+import { knowledgeExperienceCode } from "@/lib/codegen";
 import type { ApiResult } from "@/lib/api";
 
 interface Question {
@@ -23,20 +25,34 @@ interface Question {
 
 export function KnowledgeExperience({
   run,
+  notesFlag,
 }: {
   run: (method: string, path: string, body?: unknown) => Promise<ApiResult>;
+  notesFlag?: AdvisorNoteFlag;
 }) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [advisorNotes, setAdvisorNotes] = useState("");
 
   async function load() {
     const r = await run("GET", "/api/knowledge-and-experience");
-    const qs = (r.body as { data?: { questions?: Question[] } } | null)?.data?.questions ?? [];
+    const body = r.body as {
+      data?: { advisor_notes?: string | null; answers?: Record<string, number | number[]> };
+      meta?: { questions?: Question[] };
+    } | null;
+    const qs = body?.meta?.questions ?? [];
     setQuestions(qs);
+    setAdvisorNotes(body?.data?.advisor_notes ?? "");
+    const ans = body?.data?.answers ?? {};
     const prefilled: Record<string, number> = {};
-    for (const q of qs) if (typeof q.value === "number") prefilled[q.code] = q.value;
+    for (const q of qs) {
+      const v = ans[q.code];
+      if (typeof v === "number") prefilled[q.code] = v;
+    }
     setAnswers(prefilled);
   }
+
+  const notes = notesFlag?.enabled ? advisorNotes || null : null;
 
   return (
     <Card>
@@ -51,7 +67,7 @@ export function KnowledgeExperience({
               label: "Endpoint",
               value: "GET·PUT /v2/advice_session/{session_id}/knowledge_and_experience",
             },
-            { label: "Options", value: "GET response → data.questions[].options (live)" },
+            { label: "Options", value: "GET response → meta.questions[].options (live)" },
           ]}
         />
         <RunButton variant="secondary" onRun={load}>
@@ -77,14 +93,15 @@ export function KnowledgeExperience({
           </div>
         ))}
 
-        {questions.length > 0 && (
-          <>
-            <JsonPreview value={{ answers }} />
-            <RunButton onRun={() => run("PUT", "/api/knowledge-and-experience", { answers })}>
-              Submit answers
-            </RunButton>
-          </>
-        )}
+        <AdvisorNotesField flag={notesFlag} value={advisorNotes} onChange={setAdvisorNotes} />
+        <PayloadTabs
+          payload={{ advisor_notes: notes, answers }}
+          code={knowledgeExperienceCode()}
+          endpoint={{ method: "PUT", path: "/v2/advice_session/{session_id}/knowledge_and_experience" }}
+        />
+        <RunButton onRun={() => run("PUT", "/api/knowledge-and-experience", { advisor_notes: notes, answers })}>
+          Submit answers
+        </RunButton>
       </CardContent>
     </Card>
   );

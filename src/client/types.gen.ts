@@ -1922,22 +1922,64 @@ export type AdaptationSchema = {
     name?: string;
 };
 
-export type AdviceInformationDocumentSchemaV2 = {
-    data: AdviceInformationPutSchemaV2;
+export type AdviceInformationAnswerInputSchemaV2 = {
+    code: string;
+    value: unknown;
 };
 
-export type AdviceInformationPutSchemaV2 = {
-    advisor_notes: unknown;
-    fields: {
-        [key: string]: unknown;
-    };
+export type AdviceInformationAnswerSchemaV2 = {
+    readonly code: string;
+    readonly value: unknown;
+};
+
+export type AdviceInformationDataSchemaV2 = {
+    readonly advisor_notes: unknown;
+    readonly answers: Array<AdviceInformationAnswerSchemaV2>;
+};
+
+export type AdviceInformationDependsOnSchemaV2 = {
+    readonly code: string;
+    readonly value: unknown;
+};
+
+export type AdviceInformationDocumentSchemaV2 = {
+    data: AdviceInformationDataSchemaV2;
+};
+
+export type AdviceInformationFieldMetaSchemaV2 = {
+    readonly code: string;
+    depends_on?: AdviceInformationDependsOnSchemaV2 | unknown;
+    readonly info: unknown;
+    readonly label: unknown;
+    readonly multiple: boolean;
+    readonly options: Array<AdviceInformationOptionSchemaV2>;
+    readonly order: number;
+    readonly required: boolean;
+    readonly type: 'radioButtons' | 'date' | 'textInput' | 'textarea' | 'checkboxes' | 'dropdown' | 'numberInput' | 'buttonSwitch';
+};
+
+export type AdviceInformationMetaSchemaV2 = {
+    readonly fields: Array<AdviceInformationFieldMetaSchemaV2>;
+};
+
+export type AdviceInformationOptionSchemaV2 = {
+    readonly label: unknown;
+    text_field?: AdviceInformationTextFieldSchemaV2 | unknown;
+    readonly value: string;
+};
+
+export type AdviceInformationTextFieldSchemaV2 = {
+    readonly code: string;
+    readonly required: boolean;
+};
+
+export type AdviceInformationUpdateDataSchemaV2 = {
+    advisor_notes?: unknown;
+    answers?: Array<AdviceInformationAnswerInputSchemaV2>;
 };
 
 export type AdviceInformationUpdateSchemaV2 = {
-    advisor_notes?: unknown;
-    fields?: {
-        [key: string]: unknown;
-    };
+    data?: AdviceInformationUpdateDataSchemaV2;
 };
 
 export type AdviceListItemResponse = {
@@ -2123,8 +2165,37 @@ export type ExternalStatusLogSchema = {
     readonly to_status: string;
 };
 
+export type FinancialSituationDependsOnSchemaV2 = {
+    readonly code: string;
+    readonly condition: string;
+};
+
 export type FinancialSituationDocumentSchemaV2 = {
     data: FinancialSituationReadSchemaV2;
+};
+
+export type FinancialSituationFieldMetaSchemaV2 = {
+    readonly code: string;
+    depends_on?: FinancialSituationDependsOnSchemaV2 | unknown;
+    readonly label: unknown;
+    readonly priority: number;
+    readonly required: boolean;
+    readonly type: unknown;
+};
+
+export type FinancialSituationGroupMetaSchemaV2 = {
+    readonly fields: Array<FinancialSituationFieldMetaSchemaV2>;
+    readonly require_one: boolean;
+    readonly section: string;
+};
+
+export type FinancialSituationMetaSchemaV2 = {
+    readonly groups: Array<FinancialSituationGroupMetaSchemaV2>;
+};
+
+export type FinancialSituationReadDocumentSchemaV2 = {
+    data: FinancialSituationReadSchemaV2;
+    meta: FinancialSituationMetaSchemaV2;
 };
 
 export type FinancialSituationReadSchemaV2 = {
@@ -2140,6 +2211,11 @@ export type FinancialSituationUpdateSchemaV2 = {
 
 export type GenericAssessmentAdaptationSchema = {
     adapted?: boolean;
+};
+
+export type GoalIconOptionSchemaV2 = {
+    readonly url: unknown;
+    readonly value: unknown;
 };
 
 export type GoalInformationDocumentSchemaV2 = {
@@ -2158,6 +2234,12 @@ export type GoalInformationSchemaV21 = {
     fields?: {
         [key: string]: unknown;
     };
+};
+
+export type GoalMetaSchemaV2 = {
+    readonly goal_types: Array<GoalTypeOptionSchemaV2>;
+    readonly icons: Array<GoalIconOptionSchemaV2>;
+    readonly time_horizons: Array<GoalTimeHorizonOptionSchemaV2>;
 };
 
 export type GoalSchema = {
@@ -2180,6 +2262,22 @@ export type GoalSchema = {
     timeHorizon?: number;
     type?: string;
     withdrawalPlan?: number;
+};
+
+export type GoalTimeHorizonOptionSchemaV2 = {
+    readonly label: unknown;
+    readonly projection_years: unknown;
+    readonly value: unknown;
+    readonly year_interval_start: unknown;
+    readonly year_interval_stop: unknown;
+};
+
+export type GoalTypeOptionSchemaV2 = {
+    readonly icon: unknown;
+    readonly label: unknown;
+    readonly order: number;
+    readonly value: string;
+    readonly visibility: string;
 };
 
 export type InfoSchema = {
@@ -2223,11 +2321,18 @@ export type InvestorSearchResponse = {
     investors?: Array<StateInvestorOutput>;
 };
 
-export type KnowledgeAndExperienceDocumentSchemaV2 = {
-    data: KnowledgeAndExperienceResponseSchemaV2;
+export type KnowledgeAndExperienceDataSchemaV2 = {
+    readonly advisor_notes: unknown;
+    readonly answers: {
+        [key: string]: unknown;
+    };
 };
 
-export type KnowledgeAndExperienceOptionSchemaV2 = {
+export type KnowledgeAndExperienceMetaSchemaV2 = {
+    readonly questions: Array<KnowledgeAndExperienceQuestionMetaSchemaV2>;
+};
+
+export type KnowledgeAndExperienceOptionMetaSchemaV2 = {
     readonly id: number;
     readonly label: unknown;
     readonly order: number;
@@ -2251,21 +2356,18 @@ export type KnowledgeAndExperiencePutSchemaV21 = {
     };
 };
 
-export type KnowledgeAndExperienceQuestionSchemaV2 = {
-    readonly answered: boolean;
+export type KnowledgeAndExperienceQuestionMetaSchemaV2 = {
     readonly code: string;
     readonly is_multi_select: boolean;
     readonly label: unknown;
-    readonly options: Array<KnowledgeAndExperienceOptionSchemaV2>;
+    readonly options: Array<KnowledgeAndExperienceOptionMetaSchemaV2>;
     readonly order: number;
     readonly popup_text: unknown;
-    readonly value: unknown;
-    readonly value_text: unknown;
 };
 
-export type KnowledgeAndExperienceResponseSchemaV2 = {
-    readonly advisor_notes: unknown;
-    readonly questions: Array<KnowledgeAndExperienceQuestionSchemaV2>;
+export type KnowledgeAndExperienceReadDocumentSchemaV2 = {
+    data: KnowledgeAndExperienceDataSchemaV2;
+    meta: KnowledgeAndExperienceMetaSchemaV2;
 };
 
 export type NoteSchema = {
@@ -2367,8 +2469,26 @@ export type ReportFileMetaSchema = {
     name?: string;
 };
 
+export type RiskExpectationOptionMetaSchemaV2 = {
+    readonly description: unknown;
+    readonly id: number;
+    readonly image_name: unknown;
+    readonly label: unknown;
+};
+
 export type RiskQuestionDocumentSchemaV2 = {
     data: RiskQuestionSchemaV2;
+};
+
+export type RiskQuestionMetaSchemaV2 = {
+    readonly expectation_of_risk: Array<RiskExpectationOptionMetaSchemaV2>;
+    readonly is_risk2_hidden: boolean;
+    readonly risk_strategy: Array<RiskStrategyOptionMetaSchemaV2>;
+};
+
+export type RiskQuestionReadDocumentSchemaV2 = {
+    data: RiskQuestionSchemaV2;
+    meta: RiskQuestionMetaSchemaV2;
 };
 
 export type RiskQuestionSchemaV2 = {
@@ -2383,8 +2503,15 @@ export type RiskQuestionSchemaV21 = {
     risk_strategy: unknown;
 };
 
+export type RiskStrategyOptionMetaSchemaV2 = {
+    readonly description: unknown;
+    readonly id: number;
+    readonly label: unknown;
+};
+
 export type SessionAdviceResponseSchemaV2 = {
-    data: Array<SessionResponsesV2>;
+    data: AdviceInformationDataSchemaV2;
+    meta: AdviceInformationMetaSchemaV2;
 };
 
 export type SessionAdvisorMetaSchema = {
@@ -2406,6 +2533,26 @@ export type SessionAdvisorNotesSchema = {
     readonly sustainability_alignment_criteria3: unknown;
     readonly sustainability_alignment_criteria4: unknown;
     readonly sustainability_alignment_criteria5: unknown;
+};
+
+export type SessionCreateDocumentSchemaV2 = {
+    data: SessionCreateResponseSchemaV2;
+};
+
+export type SessionCreateRequestSchemaV2 = {
+    advisor_id: string;
+    investor_id: string;
+    name: string;
+    session_id?: unknown;
+};
+
+export type SessionCreateResponseSchemaV2 = {
+    readonly advice_type: 'MiFIID II investment Advice' | 'Order Execution';
+    readonly advisor_id: string;
+    readonly investor_id: string;
+    readonly name: string;
+    readonly session_id: string;
+    readonly status: 'open' | 'complete' | 'cancelled' | 'rejected';
 };
 
 export type SessionDataSchema = {
@@ -2452,6 +2599,7 @@ export type SessionGoalCreateResponseGoalSchemaV2 = {
 
 export type SessionGoalDocumentSchemaV2 = {
     data: SessionGoalSchemaWithDataV2;
+    meta: GoalMetaSchemaV2;
 };
 
 export type SessionGoalMutationDocumentSchemaV2 = {
@@ -2475,6 +2623,7 @@ export type SessionGoalSchemaV2 = {
     readonly description: unknown;
     readonly horizon_text: unknown;
     readonly horizon_value: number;
+    readonly icon: unknown;
     readonly id: string;
     initial_deposit_meta?: InitialDepositMetaSchema | unknown;
     readonly initial_risk_class: unknown;
@@ -2487,12 +2636,14 @@ export type SessionGoalSchemaV2 = {
     readonly risk_class: unknown;
     readonly risk_expectation: unknown;
     readonly risk_willingness: unknown;
+    readonly type: unknown;
 };
 
 export type SessionGoalSchemaWithDataV2 = {
     readonly description: unknown;
     readonly horizon_text: unknown;
     readonly horizon_value: number;
+    readonly icon: unknown;
     readonly id: string;
     initial_deposit_meta?: InitialDepositMetaSchema | unknown;
     readonly initial_risk_class: unknown;
@@ -2506,6 +2657,7 @@ export type SessionGoalSchemaWithDataV2 = {
     readonly risk_class: unknown;
     readonly risk_expectation: unknown;
     readonly risk_willingness: unknown;
+    readonly type: unknown;
 };
 
 export type SessionGoalUpdateRequestSchemaV2 = {
@@ -2513,10 +2665,12 @@ export type SessionGoalUpdateRequestSchemaV2 = {
     horizon_value?: number;
     icon?: unknown;
     name?: string;
+    type?: unknown;
 };
 
 export type SessionGoalsDocumentSchemaV2 = {
     data: Array<SessionGoalSchemaV2>;
+    meta: GoalMetaSchemaV2;
 };
 
 export type SessionInvestorCompanyContactMetaSchema = {
@@ -2613,16 +2767,6 @@ export type SessionMetaSchema = {
 export type SessionPatchRequestSchema = {
     external_status?: unknown;
     name?: string;
-};
-
-export type SessionResponsesV2 = {
-    readonly answered: boolean;
-    readonly code: string;
-    readonly label: string;
-    readonly required: boolean;
-    readonly type: 'radioButtons' | 'date' | 'textInput' | 'textarea' | 'checkboxes' | 'dropdown' | 'numberInput' | 'buttonSwitch';
-    readonly value: string;
-    readonly value_text: string;
 };
 
 export type SessionTransactionsDataSchema = {
@@ -2800,13 +2944,44 @@ export type SustainabilityAdaptedSchema = {
     preferenceCriteria?: Array<AdaptationSchema>;
 };
 
+export type SustainabilityAdvisorNotesMetaSchemaV2 = {
+    readonly enabled: boolean;
+    readonly required: boolean;
+};
+
+export type SustainabilityAlignmentCriteriaMetaSchemaV2 = {
+    readonly slots: Array<SustainabilityAlignmentSlotMetaSchemaV2>;
+    readonly steps: Array<SustainabilityAlignmentStepMetaSchemaV2>;
+};
+
+export type SustainabilityAlignmentSlotMetaSchemaV2 = {
+    readonly content: unknown;
+    readonly is_comment_shown: boolean;
+    readonly key: string;
+    readonly order: number;
+    readonly required: boolean;
+    readonly title: unknown;
+};
+
 export type SustainabilityAlignmentSlotSchemaV2 = {
     advisor_notes: unknown;
     value: unknown;
 };
 
+export type SustainabilityAlignmentStepMetaSchemaV2 = {
+    readonly label: unknown;
+    readonly order: number;
+    readonly value: number;
+};
+
 export type SustainabilityDocumentSchemaV2 = {
     data: SustainabilitySchemaV2;
+};
+
+export type SustainabilityGenericAssessmentMetaSchemaV2 = {
+    readonly enabled: boolean;
+    readonly is_comment_required: boolean;
+    readonly is_comment_shown: boolean;
 };
 
 export type SustainabilityGenericSchemaV2 = {
@@ -2814,9 +2989,34 @@ export type SustainabilityGenericSchemaV2 = {
     comment: unknown;
 };
 
+export type SustainabilityMetaSchemaV2 = {
+    alignment_criteria: SustainabilityAlignmentCriteriaMetaSchemaV2;
+    generic_assessment: SustainabilityGenericAssessmentMetaSchemaV2;
+    preference_criteria: SustainabilityPreferenceCriteriaMetaSchemaV2;
+};
+
+export type SustainabilityPreferenceCriteriaMetaSchemaV2 = {
+    advisor_notes: SustainabilityAdvisorNotesMetaSchemaV2;
+    readonly description: unknown;
+    readonly enabled: boolean;
+    readonly header: unknown;
+    readonly themes: Array<SustainabilityPreferenceThemeMetaSchemaV2>;
+};
+
 export type SustainabilityPreferenceSchemaV2 = {
     advisor_notes: unknown;
     themes: Array<string>;
+};
+
+export type SustainabilityPreferenceThemeMetaSchemaV2 = {
+    readonly icon: unknown;
+    readonly id: string;
+    readonly title: unknown;
+};
+
+export type SustainabilityReadDocumentSchemaV2 = {
+    data: SustainabilitySchemaV2;
+    meta: SustainabilityMetaSchemaV2;
 };
 
 export type SustainabilitySchema = {
@@ -3006,6 +3206,10 @@ export type CustomDataAndMetaSchemaWritable = {
     ticker: string;
 };
 
+export type AdviceInformationDocumentSchemaV2Writable = {
+    [key: string]: never;
+};
+
 export type AdviceListItemResponseWritable = {
     advisor?: AdvisorAdviceResponseModel;
     advisorNotes?: unknown;
@@ -3075,11 +3279,15 @@ export type DeletedInvestorOutputWritable = {
     zipCode?: string;
 };
 
+export type FinancialSituationReadDocumentSchemaV2Writable = {
+    data: FinancialSituationReadSchemaV2;
+};
+
 export type InvestorSearchResponseWritable = {
     investors?: Array<StateInvestorOutputWritable>;
 };
 
-export type KnowledgeAndExperienceDocumentSchemaV2Writable = {
+export type KnowledgeAndExperienceReadDocumentSchemaV2Writable = {
     [key: string]: never;
 };
 
@@ -3103,8 +3311,16 @@ export type RecurringTransactionSchemaWritable = {
     weight: number;
 };
 
+export type RiskQuestionReadDocumentSchemaV2Writable = {
+    data: RiskQuestionSchemaV2;
+};
+
 export type SessionAdviceResponseSchemaV2Writable = {
-    data: Array<unknown>;
+    [key: string]: never;
+};
+
+export type SessionCreateDocumentSchemaV2Writable = {
+    [key: string]: never;
 };
 
 export type SessionDataSchemaWritable = {
@@ -3230,6 +3446,10 @@ export type StateSessionCreateResponseWritable = {
     signed?: 'waiting' | 'signed' | 'declined';
     survey_status?: unknown;
     survey_status_message?: unknown;
+};
+
+export type SustainabilityReadDocumentSchemaV2Writable = {
+    data: SustainabilitySchemaV2;
 };
 
 export type PostV1AnalyzeAssetClassAllocationData = {
@@ -5452,6 +5672,35 @@ export type GetV2AdviceSessionResponses = {
 
 export type GetV2AdviceSessionResponse = GetV2AdviceSessionResponses[keyof GetV2AdviceSessionResponses];
 
+export type PostV2AdviceSessionData = {
+    body?: SessionCreateRequestSchemaV2;
+    path?: never;
+    query?: never;
+    url: '/v2/advice_session';
+};
+
+export type PostV2AdviceSessionErrors = {
+    /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
+     * Authentication error
+     */
+    401: HttpError;
+};
+
+export type PostV2AdviceSessionError = PostV2AdviceSessionErrors[keyof PostV2AdviceSessionErrors];
+
+export type PostV2AdviceSessionResponses = {
+    /**
+     * Successful response
+     */
+    201: SessionCreateDocumentSchemaV2;
+};
+
+export type PostV2AdviceSessionResponse = PostV2AdviceSessionResponses[keyof PostV2AdviceSessionResponses];
+
 export type GetV2AdviceSessionBySessionIdData = {
     body?: never;
     path: {
@@ -5604,6 +5853,10 @@ export type GetV2AdviceSessionBySessionIdFinancialSituationData = {
 
 export type GetV2AdviceSessionBySessionIdFinancialSituationErrors = {
     /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
      * Authentication error
      */
     401: HttpError;
@@ -5619,7 +5872,7 @@ export type GetV2AdviceSessionBySessionIdFinancialSituationResponses = {
     /**
      * Successful response
      */
-    200: FinancialSituationDocumentSchemaV2;
+    200: FinancialSituationReadDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdFinancialSituationResponse = GetV2AdviceSessionBySessionIdFinancialSituationResponses[keyof GetV2AdviceSessionBySessionIdFinancialSituationResponses];
@@ -5944,7 +6197,7 @@ export type GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses = {
     /**
      * Successful response
      */
-    200: KnowledgeAndExperienceDocumentSchemaV2;
+    200: KnowledgeAndExperienceReadDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponse = GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses[keyof GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses];
@@ -5995,6 +6248,10 @@ export type GetV2AdviceSessionBySessionIdRiskQuestionData = {
 
 export type GetV2AdviceSessionBySessionIdRiskQuestionErrors = {
     /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
      * Authentication error
      */
     401: HttpError;
@@ -6010,7 +6267,7 @@ export type GetV2AdviceSessionBySessionIdRiskQuestionResponses = {
     /**
      * Successful response
      */
-    200: RiskQuestionDocumentSchemaV2;
+    200: RiskQuestionReadDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdRiskQuestionResponse = GetV2AdviceSessionBySessionIdRiskQuestionResponses[keyof GetV2AdviceSessionBySessionIdRiskQuestionResponses];
@@ -6061,6 +6318,10 @@ export type GetV2AdviceSessionBySessionIdSustainabilityData = {
 
 export type GetV2AdviceSessionBySessionIdSustainabilityErrors = {
     /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
      * Authentication error
      */
     401: HttpError;
@@ -6076,7 +6337,7 @@ export type GetV2AdviceSessionBySessionIdSustainabilityResponses = {
     /**
      * Successful response
      */
-    200: SustainabilityDocumentSchemaV2;
+    200: SustainabilityReadDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdSustainabilityResponse = GetV2AdviceSessionBySessionIdSustainabilityResponses[keyof GetV2AdviceSessionBySessionIdSustainabilityResponses];

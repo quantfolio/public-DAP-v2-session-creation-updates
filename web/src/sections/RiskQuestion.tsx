@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { RunButton } from "@/components/ui/run-button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { NativeSelect as Select } from "@/components/ui/native-select";
 import {
   Card,
   CardContent,
@@ -11,7 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SourceInfo } from "@/components/SourceInfo";
-import { JsonPreview } from "@/components/JsonPreview";
+import { PayloadTabs } from "@/components/PayloadTabs";
+import { AdvisorNotesField, type AdvisorNoteFlag } from "@/components/AdvisorNotesField";
+import { riskQuestionCode } from "@/lib/codegen";
 import type { ApiResult } from "@/lib/api";
 
 interface RiskOption {
@@ -32,38 +33,48 @@ const EMPTY: RiskQ = { enabled: false, options: [] };
 export function RiskQuestion({
   run,
   authed,
+  lang,
+  notesFlag,
 }: {
   run: (method: string, path: string, body?: unknown) => Promise<ApiResult>;
   authed: boolean;
+  lang: string;
+  notesFlag?: AdvisorNoteFlag;
 }) {
   const [config, setConfig] = useState<Config>({ expectationOfRisk: EMPTY, riskStrategy: EMPTY });
   const [expectation, setExpectation] = useState("");
   const [strategy, setStrategy] = useState("");
   const [advisorNotes, setAdvisorNotes] = useState("");
 
+  async function loadConfig() {
+    try {
+      const c = await fetch(`/api/config/risk-question?lang=${lang}`).then((r) => r.json());
+      setConfig({
+        expectationOfRisk: c.expectationOfRisk ?? EMPTY,
+        riskStrategy: c.riskStrategy ?? EMPTY,
+      });
+    } catch {
+      setConfig({ expectationOfRisk: EMPTY, riskStrategy: EMPTY });
+    }
+  }
+
   useEffect(() => {
     if (!authed) {
       setConfig({ expectationOfRisk: EMPTY, riskStrategy: EMPTY });
       return;
     }
-    fetch("/api/config/risk-question")
-      .then((r) => r.json())
-      .then((c) =>
-        setConfig({
-          expectationOfRisk: c.expectationOfRisk ?? EMPTY,
-          riskStrategy: c.riskStrategy ?? EMPTY,
-        }),
-      )
-      .catch(() => setConfig({ expectationOfRisk: EMPTY, riskStrategy: EMPTY }));
-  }, [authed]);
+    loadConfig();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authed, lang]);
 
   const body = {
-    advisor_notes: advisorNotes || null,
+    advisor_notes: notesFlag?.enabled ? advisorNotes || null : null,
     expectation_of_risk: !config.expectationOfRisk.enabled || expectation === "" ? null : Number(expectation),
     risk_strategy: !config.riskStrategy.enabled || strategy === "" ? null : Number(strategy),
   };
 
   async function load() {
+    await loadConfig(); // ensure options/enabled are loaded alongside the values
     const r = await run("GET", "/api/risk-question");
     const data = (r.body as { data?: { expectation_of_risk?: number | null; risk_strategy?: number | null; advisor_notes?: string | null } } | null)?.data;
     setExpectation(data?.expectation_of_risk != null ? String(data.expectation_of_risk) : "");
@@ -119,12 +130,13 @@ export function RiskQuestion({
           <p className="text-xs text-muted-foreground">Risk strategy is disabled for this tenant (isRisk2Hidden).</p>
         )}
 
-        <div className="space-y-1.5">
-          <Label htmlFor="rq-notes">Advisor notes</Label>
-          <Input id="rq-notes" value={advisorNotes} onChange={(e) => setAdvisorNotes(e.target.value)} />
-        </div>
+        <AdvisorNotesField flag={notesFlag} value={advisorNotes} onChange={setAdvisorNotes} />
 
-        <JsonPreview value={body} />
+        <PayloadTabs
+          payload={body}
+          code={riskQuestionCode()}
+          endpoint={{ method: "PUT", path: "/v2/advice_session/{session_id}/risk_question" }}
+        />
         <RunButton onRun={() => run("PUT", "/api/risk-question", body)}>Submit</RunButton>
       </CardContent>
     </Card>

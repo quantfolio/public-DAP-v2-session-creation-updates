@@ -2,7 +2,7 @@
 
 import { type Client, type ClientMeta, formDataBodySerializer, type Options as Options2, type RequestResult, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteV1DeletedInvestorByInvestorIdData, DeleteV1DeletedInvestorByInvestorIdErrors, DeleteV1DeletedInvestorByInvestorIdResponses, DeleteV1DeletedInvestorsBulkDeleteData, DeleteV1DeletedInvestorsBulkDeleteErrors, DeleteV1DeletedInvestorsBulkDeleteResponses, DeleteV1DeletedSessionBySessionIdData, DeleteV1DeletedSessionBySessionIdErrors, DeleteV1DeletedSessionBySessionIdResponses, DeleteV1DeletedSessionsBulkDeleteData, DeleteV1DeletedSessionsBulkDeleteErrors, DeleteV1DeletedSessionsBulkDeleteResponses, DeleteV1InvestorByInvestorIdAccountByAccountIdData, DeleteV1InvestorByInvestorIdAccountByAccountIdErrors, DeleteV1InvestorByInvestorIdAccountByAccountIdResponses, DeleteV1InvestorByInvestorIdData, DeleteV1InvestorByInvestorIdErrors, DeleteV1InvestorByInvestorIdResponses, DeleteV1SessionBySessionIdData, DeleteV1SessionBySessionIdErrors, DeleteV1SessionBySessionIdGoalByGoalIdData, DeleteV1SessionBySessionIdGoalByGoalIdErrors, DeleteV1SessionBySessionIdGoalByGoalIdResponses, DeleteV1SessionBySessionIdResponses, DeleteV1WebhookByWebhookIdData, DeleteV1WebhookByWebhookIdErrors, DeleteV1WebhookByWebhookIdResponses, DeleteV2AdviceSessionBySessionIdGoalByGoalIdData, DeleteV2AdviceSessionBySessionIdGoalByGoalIdErrors, DeleteV2AdviceSessionBySessionIdGoalByGoalIdResponses, GetV1AdvisorByAdvisorIdData, GetV1AdvisorByAdvisorIdErrors, GetV1AdvisorByAdvisorIdResponses, GetV1AdvisorData, GetV1AdvisorErrors, GetV1AdvisorResponses, GetV1AnalyzeFrontierData, GetV1AnalyzeFrontierErrors, GetV1AnalyzeFrontierResponses, GetV1EventData, GetV1EventErrors, GetV1EventResponses, GetV1InvestorByInvestorIdAccountByAccountIdData, GetV1InvestorByInvestorIdAccountByAccountIdErrors, GetV1InvestorByInvestorIdAccountByAccountIdResponses, GetV1InvestorByInvestorIdAccountsData, GetV1InvestorByInvestorIdAccountsErrors, GetV1InvestorByInvestorIdAccountsResponses, GetV1InvestorByInvestorIdData, GetV1InvestorByInvestorIdErrors, GetV1InvestorByInvestorIdResponses, GetV1InvestorData, GetV1InvestorDeletedData, GetV1InvestorDeletedErrors, GetV1InvestorDeletedResponses, GetV1InvestorErrors, GetV1InvestorResponses, GetV1ProductsAttachmentData, GetV1ProductsAttachmentErrors, GetV1ProductsAttachmentResponses, GetV1ProductsData, GetV1ProductsErrors, GetV1ProductsResponses, GetV1ProductsTimeseriesByTickerData, GetV1ProductsTimeseriesByTickerErrors, GetV1ProductsTimeseriesByTickerResponses, GetV1ProductsTimeseriesData, GetV1ProductsTimeseriesErrors, GetV1ProductsTimeseriesResponses, GetV1ReportByInvestorIdBySessionIdData, GetV1ReportByInvestorIdBySessionIdErrors, GetV1ReportByInvestorIdBySessionIdResponses, GetV1RiskGenericConfigData, GetV1RiskGenericConfigErrors, GetV1RiskGenericConfigResponses, GetV1RiskGenericData, GetV1RiskGenericErrors, GetV1RiskGenericMetaData, GetV1RiskGenericMetaErrors, GetV1RiskGenericMetaResponses, GetV1RiskGenericResponses, GetV1RoboPortfolioData, GetV1RoboPortfolioErrors, GetV1RoboPortfolioMetaData, GetV1RoboPortfolioMetaErrors, GetV1RoboPortfolioMetaResponses, GetV1RoboPortfolioResponses, GetV1RoboSelectionData, GetV1RoboSelectionErrors, GetV1RoboSelectionMetaData, GetV1RoboSelectionMetaErrors, GetV1RoboSelectionMetaResponses, GetV1RoboSelectionResponses, GetV1SessionBySessionIdGoalByGoalIdData, GetV1SessionBySessionIdGoalByGoalIdErrors, GetV1SessionBySessionIdGoalByGoalIdResponses, GetV1SessionBySessionIdGoalData, GetV1SessionBySessionIdGoalErrors, GetV1SessionBySessionIdGoalResponses, GetV1SessionData, GetV1SessionErrors, GetV1SessionResponses, GetV1WebhookByWebhookIdData, GetV1WebhookByWebhookIdErrors, GetV1WebhookByWebhookIdResponses, GetV1WebhookData, GetV1WebhookErrors, GetV1WebhookResponses, GetV2AdviceSessionBySessionIdAdviceInformationData, GetV2AdviceSessionBySessionIdAdviceInformationErrors, GetV2AdviceSessionBySessionIdAdviceInformationResponses, GetV2AdviceSessionBySessionIdData, GetV2AdviceSessionBySessionIdErrors, GetV2AdviceSessionBySessionIdFinancialSituationData, GetV2AdviceSessionBySessionIdFinancialSituationErrors, GetV2AdviceSessionBySessionIdFinancialSituationResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdData, GetV2AdviceSessionBySessionIdGoalByGoalIdErrors, GetV2AdviceSessionBySessionIdGoalByGoalIdInformationData, GetV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors, GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdResponses, GetV2AdviceSessionBySessionIdGoalData, GetV2AdviceSessionBySessionIdGoalErrors, GetV2AdviceSessionBySessionIdGoalResponses, GetV2AdviceSessionBySessionIdKnowledgeAndExperienceData, GetV2AdviceSessionBySessionIdKnowledgeAndExperienceErrors, GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses, GetV2AdviceSessionBySessionIdResponses, GetV2AdviceSessionBySessionIdRiskQuestionData, GetV2AdviceSessionBySessionIdRiskQuestionErrors, GetV2AdviceSessionBySessionIdRiskQuestionResponses, GetV2AdviceSessionBySessionIdSustainabilityData, GetV2AdviceSessionBySessionIdSustainabilityErrors, GetV2AdviceSessionBySessionIdSustainabilityResponses, GetV2AdviceSessionBySessionIdTransactionsData, GetV2AdviceSessionBySessionIdTransactionsErrors, GetV2AdviceSessionBySessionIdTransactionsResponses, GetV2AdviceSessionData, GetV2AdviceSessionErrors, GetV2AdviceSessionResponses, GetV2CategoriesByCategoryIdData, GetV2CategoriesByCategoryIdErrors, GetV2CategoriesByCategoryIdResponses, GetV2CategoriesData, GetV2CategoriesErrors, GetV2CategoriesResponses, GetV2SettingsByApplicationData, GetV2SettingsByApplicationErrors, GetV2SettingsByApplicationResponses, PatchV1InvestorByInvestorIdAccountByAccountIdData, PatchV1InvestorByInvestorIdAccountByAccountIdErrors, PatchV1InvestorByInvestorIdAccountByAccountIdResponses, PatchV1InvestorByInvestorIdData, PatchV1InvestorByInvestorIdErrors, PatchV1InvestorByInvestorIdResponses, PatchV1ProductsTimeseriesByTickerData, PatchV1ProductsTimeseriesByTickerErrors, PatchV1ProductsTimeseriesByTickerResponses, PatchV1SessionBySessionIdGoalByGoalIdData, PatchV1SessionBySessionIdGoalByGoalIdErrors, PatchV1SessionBySessionIdGoalByGoalIdResponses, PatchV1WebhookByWebhookIdData, PatchV1WebhookByWebhookIdErrors, PatchV1WebhookByWebhookIdResponses, PatchV2AdviceSessionBySessionIdAdviceInformationData, PatchV2AdviceSessionBySessionIdAdviceInformationErrors, PatchV2AdviceSessionBySessionIdAdviceInformationResponses, PatchV2AdviceSessionBySessionIdData, PatchV2AdviceSessionBySessionIdErrors, PatchV2AdviceSessionBySessionIdFinancialSituationData, PatchV2AdviceSessionBySessionIdFinancialSituationErrors, PatchV2AdviceSessionBySessionIdFinancialSituationResponses, PatchV2AdviceSessionBySessionIdGoalByGoalIdData, PatchV2AdviceSessionBySessionIdGoalByGoalIdErrors, PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationData, PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors, PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses, PatchV2AdviceSessionBySessionIdGoalByGoalIdResponses, PatchV2AdviceSessionBySessionIdResponses, PostV1AnalyzeAssetClassAllocationData, PostV1AnalyzeAssetClassAllocationErrors, PostV1AnalyzeAssetClassAllocationResponses, PostV1AnalyzeCostData, PostV1AnalyzeCostErrors, PostV1AnalyzeCostResponses, PostV1AnalyzeForecastData, PostV1AnalyzeForecastErrors, PostV1AnalyzeForecastResponses, PostV1AnalyzeOrderSummaryData, PostV1AnalyzeOrderSummaryErrors, PostV1AnalyzeOrderSummaryResponses, PostV1AnalyzeRiskReturnData, PostV1AnalyzeRiskReturnErrors, PostV1AnalyzeRiskReturnResponses, PostV1AnalyzeScoringData, PostV1AnalyzeScoringErrors, PostV1AnalyzeScoringResponses, PostV1AuthTokenData, PostV1AuthTokenErrors, PostV1AuthTokenResponses, PostV1CalculationForecastDepositData, PostV1CalculationForecastDepositErrors, PostV1CalculationForecastDepositResponses, PostV1InvestorByInvestorIdAccountsData, PostV1InvestorByInvestorIdAccountsErrors, PostV1InvestorByInvestorIdAccountsResponses, PostV1InvestorData, PostV1InvestorErrors, PostV1InvestorResponses, PostV1InvestorSearchData, PostV1InvestorSearchErrors, PostV1InvestorSearchResponses, PostV1ProductsAttachmentData, PostV1ProductsAttachmentErrors, PostV1ProductsAttachmentResponses, PostV1ProductsTimeseriesData, PostV1ProductsTimeseriesErrors, PostV1ProductsTimeseriesResponses, PostV1ReportByInvestorIdBySessionIdDownloadData, PostV1ReportByInvestorIdBySessionIdDownloadErrors, PostV1ReportByInvestorIdBySessionIdDownloadResponses, PostV1SessionBySessionIdCopyData, PostV1SessionBySessionIdCopyErrors, PostV1SessionBySessionIdCopyResponses, PostV1SessionBySessionIdGoalData, PostV1SessionBySessionIdGoalErrors, PostV1SessionBySessionIdGoalResponses, PostV1StateSessionData, PostV1StateSessionErrors, PostV1StateSessionResponses, PostV1WebhookByWebhookIdTestData, PostV1WebhookByWebhookIdTestErrors, PostV1WebhookByWebhookIdTestResponses, PostV1WebhookData, PostV1WebhookErrors, PostV1WebhookResponses, PostV2AdviceSessionBySessionIdGoalData, PostV2AdviceSessionBySessionIdGoalErrors, PostV2AdviceSessionBySessionIdGoalResponses, PostV2AnalyzeHistoricalReturnData, PostV2AnalyzeHistoricalReturnErrors, PostV2AnalyzeHistoricalReturnResponses, PutV1SessionBySessionIdCancelData, PutV1SessionBySessionIdCancelErrors, PutV1SessionBySessionIdCancelResponses, PutV2AdviceSessionBySessionIdKnowledgeAndExperienceData, PutV2AdviceSessionBySessionIdKnowledgeAndExperienceErrors, PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses, PutV2AdviceSessionBySessionIdRiskQuestionData, PutV2AdviceSessionBySessionIdRiskQuestionErrors, PutV2AdviceSessionBySessionIdRiskQuestionResponses, PutV2AdviceSessionBySessionIdSustainabilityData, PutV2AdviceSessionBySessionIdSustainabilityErrors, PutV2AdviceSessionBySessionIdSustainabilityResponses } from './types.gen';
+import type { DeleteV1DeletedInvestorByInvestorIdData, DeleteV1DeletedInvestorByInvestorIdErrors, DeleteV1DeletedInvestorByInvestorIdResponses, DeleteV1DeletedInvestorsBulkDeleteData, DeleteV1DeletedInvestorsBulkDeleteErrors, DeleteV1DeletedInvestorsBulkDeleteResponses, DeleteV1DeletedSessionBySessionIdData, DeleteV1DeletedSessionBySessionIdErrors, DeleteV1DeletedSessionBySessionIdResponses, DeleteV1DeletedSessionsBulkDeleteData, DeleteV1DeletedSessionsBulkDeleteErrors, DeleteV1DeletedSessionsBulkDeleteResponses, DeleteV1InvestorByInvestorIdAccountByAccountIdData, DeleteV1InvestorByInvestorIdAccountByAccountIdErrors, DeleteV1InvestorByInvestorIdAccountByAccountIdResponses, DeleteV1InvestorByInvestorIdData, DeleteV1InvestorByInvestorIdErrors, DeleteV1InvestorByInvestorIdResponses, DeleteV1SessionBySessionIdData, DeleteV1SessionBySessionIdErrors, DeleteV1SessionBySessionIdGoalByGoalIdData, DeleteV1SessionBySessionIdGoalByGoalIdErrors, DeleteV1SessionBySessionIdGoalByGoalIdResponses, DeleteV1SessionBySessionIdResponses, DeleteV1WebhookByWebhookIdData, DeleteV1WebhookByWebhookIdErrors, DeleteV1WebhookByWebhookIdResponses, DeleteV2AdviceSessionBySessionIdGoalByGoalIdData, DeleteV2AdviceSessionBySessionIdGoalByGoalIdErrors, DeleteV2AdviceSessionBySessionIdGoalByGoalIdResponses, GetV1AdvisorByAdvisorIdData, GetV1AdvisorByAdvisorIdErrors, GetV1AdvisorByAdvisorIdResponses, GetV1AdvisorData, GetV1AdvisorErrors, GetV1AdvisorResponses, GetV1AnalyzeFrontierData, GetV1AnalyzeFrontierErrors, GetV1AnalyzeFrontierResponses, GetV1EventData, GetV1EventErrors, GetV1EventResponses, GetV1InvestorByInvestorIdAccountByAccountIdData, GetV1InvestorByInvestorIdAccountByAccountIdErrors, GetV1InvestorByInvestorIdAccountByAccountIdResponses, GetV1InvestorByInvestorIdAccountsData, GetV1InvestorByInvestorIdAccountsErrors, GetV1InvestorByInvestorIdAccountsResponses, GetV1InvestorByInvestorIdData, GetV1InvestorByInvestorIdErrors, GetV1InvestorByInvestorIdResponses, GetV1InvestorData, GetV1InvestorDeletedData, GetV1InvestorDeletedErrors, GetV1InvestorDeletedResponses, GetV1InvestorErrors, GetV1InvestorResponses, GetV1ProductsAttachmentData, GetV1ProductsAttachmentErrors, GetV1ProductsAttachmentResponses, GetV1ProductsData, GetV1ProductsErrors, GetV1ProductsResponses, GetV1ProductsTimeseriesByTickerData, GetV1ProductsTimeseriesByTickerErrors, GetV1ProductsTimeseriesByTickerResponses, GetV1ProductsTimeseriesData, GetV1ProductsTimeseriesErrors, GetV1ProductsTimeseriesResponses, GetV1ReportByInvestorIdBySessionIdData, GetV1ReportByInvestorIdBySessionIdErrors, GetV1ReportByInvestorIdBySessionIdResponses, GetV1RiskGenericConfigData, GetV1RiskGenericConfigErrors, GetV1RiskGenericConfigResponses, GetV1RiskGenericData, GetV1RiskGenericErrors, GetV1RiskGenericMetaData, GetV1RiskGenericMetaErrors, GetV1RiskGenericMetaResponses, GetV1RiskGenericResponses, GetV1RoboPortfolioData, GetV1RoboPortfolioErrors, GetV1RoboPortfolioMetaData, GetV1RoboPortfolioMetaErrors, GetV1RoboPortfolioMetaResponses, GetV1RoboPortfolioResponses, GetV1RoboSelectionData, GetV1RoboSelectionErrors, GetV1RoboSelectionMetaData, GetV1RoboSelectionMetaErrors, GetV1RoboSelectionMetaResponses, GetV1RoboSelectionResponses, GetV1SessionBySessionIdGoalByGoalIdData, GetV1SessionBySessionIdGoalByGoalIdErrors, GetV1SessionBySessionIdGoalByGoalIdResponses, GetV1SessionBySessionIdGoalData, GetV1SessionBySessionIdGoalErrors, GetV1SessionBySessionIdGoalResponses, GetV1SessionData, GetV1SessionErrors, GetV1SessionResponses, GetV1WebhookByWebhookIdData, GetV1WebhookByWebhookIdErrors, GetV1WebhookByWebhookIdResponses, GetV1WebhookData, GetV1WebhookErrors, GetV1WebhookResponses, GetV2AdviceSessionBySessionIdAdviceInformationData, GetV2AdviceSessionBySessionIdAdviceInformationErrors, GetV2AdviceSessionBySessionIdAdviceInformationResponses, GetV2AdviceSessionBySessionIdData, GetV2AdviceSessionBySessionIdErrors, GetV2AdviceSessionBySessionIdFinancialSituationData, GetV2AdviceSessionBySessionIdFinancialSituationErrors, GetV2AdviceSessionBySessionIdFinancialSituationResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdData, GetV2AdviceSessionBySessionIdGoalByGoalIdErrors, GetV2AdviceSessionBySessionIdGoalByGoalIdInformationData, GetV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors, GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdResponses, GetV2AdviceSessionBySessionIdGoalData, GetV2AdviceSessionBySessionIdGoalErrors, GetV2AdviceSessionBySessionIdGoalResponses, GetV2AdviceSessionBySessionIdKnowledgeAndExperienceData, GetV2AdviceSessionBySessionIdKnowledgeAndExperienceErrors, GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses, GetV2AdviceSessionBySessionIdResponses, GetV2AdviceSessionBySessionIdRiskQuestionData, GetV2AdviceSessionBySessionIdRiskQuestionErrors, GetV2AdviceSessionBySessionIdRiskQuestionResponses, GetV2AdviceSessionBySessionIdSustainabilityData, GetV2AdviceSessionBySessionIdSustainabilityErrors, GetV2AdviceSessionBySessionIdSustainabilityResponses, GetV2AdviceSessionBySessionIdTransactionsData, GetV2AdviceSessionBySessionIdTransactionsErrors, GetV2AdviceSessionBySessionIdTransactionsResponses, GetV2AdviceSessionData, GetV2AdviceSessionErrors, GetV2AdviceSessionResponses, GetV2CategoriesByCategoryIdData, GetV2CategoriesByCategoryIdErrors, GetV2CategoriesByCategoryIdResponses, GetV2CategoriesData, GetV2CategoriesErrors, GetV2CategoriesResponses, GetV2SettingsByApplicationData, GetV2SettingsByApplicationErrors, GetV2SettingsByApplicationResponses, PatchV1InvestorByInvestorIdAccountByAccountIdData, PatchV1InvestorByInvestorIdAccountByAccountIdErrors, PatchV1InvestorByInvestorIdAccountByAccountIdResponses, PatchV1InvestorByInvestorIdData, PatchV1InvestorByInvestorIdErrors, PatchV1InvestorByInvestorIdResponses, PatchV1ProductsTimeseriesByTickerData, PatchV1ProductsTimeseriesByTickerErrors, PatchV1ProductsTimeseriesByTickerResponses, PatchV1SessionBySessionIdGoalByGoalIdData, PatchV1SessionBySessionIdGoalByGoalIdErrors, PatchV1SessionBySessionIdGoalByGoalIdResponses, PatchV1WebhookByWebhookIdData, PatchV1WebhookByWebhookIdErrors, PatchV1WebhookByWebhookIdResponses, PatchV2AdviceSessionBySessionIdAdviceInformationData, PatchV2AdviceSessionBySessionIdAdviceInformationErrors, PatchV2AdviceSessionBySessionIdAdviceInformationResponses, PatchV2AdviceSessionBySessionIdData, PatchV2AdviceSessionBySessionIdErrors, PatchV2AdviceSessionBySessionIdFinancialSituationData, PatchV2AdviceSessionBySessionIdFinancialSituationErrors, PatchV2AdviceSessionBySessionIdFinancialSituationResponses, PatchV2AdviceSessionBySessionIdGoalByGoalIdData, PatchV2AdviceSessionBySessionIdGoalByGoalIdErrors, PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationData, PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors, PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses, PatchV2AdviceSessionBySessionIdGoalByGoalIdResponses, PatchV2AdviceSessionBySessionIdResponses, PostV1AnalyzeAssetClassAllocationData, PostV1AnalyzeAssetClassAllocationErrors, PostV1AnalyzeAssetClassAllocationResponses, PostV1AnalyzeCostData, PostV1AnalyzeCostErrors, PostV1AnalyzeCostResponses, PostV1AnalyzeForecastData, PostV1AnalyzeForecastErrors, PostV1AnalyzeForecastResponses, PostV1AnalyzeOrderSummaryData, PostV1AnalyzeOrderSummaryErrors, PostV1AnalyzeOrderSummaryResponses, PostV1AnalyzeRiskReturnData, PostV1AnalyzeRiskReturnErrors, PostV1AnalyzeRiskReturnResponses, PostV1AnalyzeScoringData, PostV1AnalyzeScoringErrors, PostV1AnalyzeScoringResponses, PostV1AuthTokenData, PostV1AuthTokenErrors, PostV1AuthTokenResponses, PostV1CalculationForecastDepositData, PostV1CalculationForecastDepositErrors, PostV1CalculationForecastDepositResponses, PostV1InvestorByInvestorIdAccountsData, PostV1InvestorByInvestorIdAccountsErrors, PostV1InvestorByInvestorIdAccountsResponses, PostV1InvestorData, PostV1InvestorErrors, PostV1InvestorResponses, PostV1InvestorSearchData, PostV1InvestorSearchErrors, PostV1InvestorSearchResponses, PostV1ProductsAttachmentData, PostV1ProductsAttachmentErrors, PostV1ProductsAttachmentResponses, PostV1ProductsTimeseriesData, PostV1ProductsTimeseriesErrors, PostV1ProductsTimeseriesResponses, PostV1ReportByInvestorIdBySessionIdDownloadData, PostV1ReportByInvestorIdBySessionIdDownloadErrors, PostV1ReportByInvestorIdBySessionIdDownloadResponses, PostV1SessionBySessionIdCopyData, PostV1SessionBySessionIdCopyErrors, PostV1SessionBySessionIdCopyResponses, PostV1SessionBySessionIdGoalData, PostV1SessionBySessionIdGoalErrors, PostV1SessionBySessionIdGoalResponses, PostV1StateSessionData, PostV1StateSessionErrors, PostV1StateSessionResponses, PostV1WebhookByWebhookIdTestData, PostV1WebhookByWebhookIdTestErrors, PostV1WebhookByWebhookIdTestResponses, PostV1WebhookData, PostV1WebhookErrors, PostV1WebhookResponses, PostV2AdviceSessionBySessionIdGoalData, PostV2AdviceSessionBySessionIdGoalErrors, PostV2AdviceSessionBySessionIdGoalResponses, PostV2AdviceSessionData, PostV2AdviceSessionErrors, PostV2AdviceSessionResponses, PostV2AnalyzeHistoricalReturnData, PostV2AnalyzeHistoricalReturnErrors, PostV2AnalyzeHistoricalReturnResponses, PutV1SessionBySessionIdCancelData, PutV1SessionBySessionIdCancelErrors, PutV1SessionBySessionIdCancelResponses, PutV2AdviceSessionBySessionIdKnowledgeAndExperienceData, PutV2AdviceSessionBySessionIdKnowledgeAndExperienceErrors, PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses, PutV2AdviceSessionBySessionIdRiskQuestionData, PutV2AdviceSessionBySessionIdRiskQuestionErrors, PutV2AdviceSessionBySessionIdRiskQuestionResponses, PutV2AdviceSessionBySessionIdSustainabilityData, PutV2AdviceSessionBySessionIdSustainabilityErrors, PutV2AdviceSessionBySessionIdSustainabilityResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -352,7 +352,7 @@ export const getV1Advisor = <ThrowOnError extends boolean = false>(options?: Opt
 /**
  * Return requested advisor by specific advisor_id
  *
- * Permissions required: state, advisor/id, get
+ * Permissions required: state, advisor/id, delete
  */
 export const getV1AdvisorByAdvisorId = <ThrowOnError extends boolean = false>(options: Options<GetV1AdvisorByAdvisorIdData, ThrowOnError>): RequestResult<GetV1AdvisorByAdvisorIdResponses, GetV1AdvisorByAdvisorIdErrors, ThrowOnError> => (options.client ?? client).get<GetV1AdvisorByAdvisorIdResponses, GetV1AdvisorByAdvisorIdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -508,9 +508,10 @@ export const deleteV1InvestorByInvestorIdAccountByAccountId = <ThrowOnError exte
 });
 
 /**
- * Return account by investor_id and account_id
+ * Allow hard deleting account by UUID for investor
  *
- * Permissions required: state, account/id, get
+ * Permissions required: state, account/id, delete
+ * Deleting account without possibility to restore it.
  */
 export const getV1InvestorByInvestorIdAccountByAccountId = <ThrowOnError extends boolean = false>(options: Options<GetV1InvestorByInvestorIdAccountByAccountIdData, ThrowOnError>): RequestResult<GetV1InvestorByInvestorIdAccountByAccountIdResponses, GetV1InvestorByInvestorIdAccountByAccountIdErrors, ThrowOnError> => (options.client ?? client).get<GetV1InvestorByInvestorIdAccountByAccountIdResponses, GetV1InvestorByInvestorIdAccountByAccountIdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -691,9 +692,9 @@ export const deleteV1SessionBySessionIdGoalByGoalId = <ThrowOnError extends bool
 });
 
 /**
- * Return session goal by specified id
+ * Allow deleting session goal
  *
- * Permissions required: state, session_goal, get
+ * Permissions required: state, session_goal, delete
  */
 export const getV1SessionBySessionIdGoalByGoalId = <ThrowOnError extends boolean = false>(options: Options<GetV1SessionBySessionIdGoalByGoalIdData, ThrowOnError>): RequestResult<GetV1SessionBySessionIdGoalByGoalIdResponses, GetV1SessionBySessionIdGoalByGoalIdErrors, ThrowOnError> => (options.client ?? client).get<GetV1SessionBySessionIdGoalByGoalIdResponses, GetV1SessionBySessionIdGoalByGoalIdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -801,6 +802,25 @@ export const getV2AdviceSession = <ThrowOnError extends boolean = false>(options
 });
 
 /**
+ * [BETA] Create a new MiFID advice session for an existing investor.
+ *
+ * The new session's `advisorInput` payload is seeded with an empty
+ * financial-situation block — every financial-situation field configured
+ * for the investor's type (person/company), set to null — so a subsequent
+ * `GET .../financial_situation` advertises the full set of fields a caller
+ * can provide. `session_id` is optional and generated when omitted.
+ */
+export const postV2AdviceSession = <ThrowOnError extends boolean = false>(options?: Options<PostV2AdviceSessionData, ThrowOnError>): RequestResult<PostV2AdviceSessionResponses, PostV2AdviceSessionErrors, ThrowOnError> => (options?.client ?? client).post<PostV2AdviceSessionResponses, PostV2AdviceSessionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/v2/advice_session',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+/**
  * [BETA] Retrieve basic information for a specific advice session
  *
  * Important note(s) about the response:
@@ -839,11 +859,15 @@ export const patchV2AdviceSessionBySessionId = <ThrowOnError extends boolean = f
 });
 
 /**
- * [BETA] Retrieve advice information for a specific advice session
+ * [BETA] Retrieve advice information for a specific advice session.
  *
- * Important note(s) about the response:
+ * `data` holds the user-editable answers (`{code, value}`); `meta.fields` describes
+ * each field's structure and selectable `options`. Derived values (`answered`, the
+ * resolved option label) are omitted — compute them from `value` + `meta.fields[].options`.
  *
- * If `type` is `checkboxes`, the `value` will be a comma separated string.
+ * For `checkboxes` fields, `value` is a list. Conditional free-text follow-ups (an
+ * option's `text_field`, e.g. `meetingPlaceOther`) appear as their own field carrying
+ * `depends_on`.
  */
 export const getV2AdviceSessionBySessionIdAdviceInformation = <ThrowOnError extends boolean = false>(options: Options<GetV2AdviceSessionBySessionIdAdviceInformationData, ThrowOnError>): RequestResult<GetV2AdviceSessionBySessionIdAdviceInformationResponses, GetV2AdviceSessionBySessionIdAdviceInformationErrors, ThrowOnError> => (options.client ?? client).get<GetV2AdviceSessionBySessionIdAdviceInformationResponses, GetV2AdviceSessionBySessionIdAdviceInformationErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -860,9 +884,11 @@ export const getV2AdviceSessionBySessionIdAdviceInformation = <ThrowOnError exte
  * stored answers unchanged; `advisor_notes` is updated only when present.
  * Sibling keys and other namespaces inside `advisorInput` are preserved.
  *
- * The matching GET on this route returns a config-enriched shape; this
- * PATCH returns the simple `{fields, advisor_notes}` echo of the merged
- * state, not the enriched shape.
+ * Submitted values for configured choice fields are validated against their options;
+ * an invalid option code returns 400.
+ *
+ * The request mirrors the GET `data` shape; the response is a data-only echo of the
+ * merged state (`{data: {answers, advisor_notes}}`), without the `meta` block.
  */
 export const patchV2AdviceSessionBySessionIdAdviceInformation = <ThrowOnError extends boolean = false>(options: Options<PatchV2AdviceSessionBySessionIdAdviceInformationData, ThrowOnError>): RequestResult<PatchV2AdviceSessionBySessionIdAdviceInformationResponses, PatchV2AdviceSessionBySessionIdAdviceInformationErrors, ThrowOnError> => (options.client ?? client).patch<PatchV2AdviceSessionBySessionIdAdviceInformationResponses, PatchV2AdviceSessionBySessionIdAdviceInformationErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -878,8 +904,9 @@ export const patchV2AdviceSessionBySessionIdAdviceInformation = <ThrowOnError ex
  * [BETA] Read the financial-situation sub-resource.
  *
  * A session has a single investor type, so the matching block (person or
- * company) is returned under one generic `financial_situation` key (null if
- * unset). The advisor-notes field is included regardless of investor type.
+ * company) is returned under `data.financial_situation` (null if unset), with the
+ * advisor notes. `meta.groups` describes the configured fields for that investor type
+ * (sections, labels, input types, required-ness, and any conditional `depends_on`).
  */
 export const getV2AdviceSessionBySessionIdFinancialSituation = <ThrowOnError extends boolean = false>(options: Options<GetV2AdviceSessionBySessionIdFinancialSituationData, ThrowOnError>): RequestResult<GetV2AdviceSessionBySessionIdFinancialSituationResponses, GetV2AdviceSessionBySessionIdFinancialSituationErrors, ThrowOnError> => (options.client ?? client).get<GetV2AdviceSessionBySessionIdFinancialSituationResponses, GetV2AdviceSessionBySessionIdFinancialSituationErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -951,11 +978,9 @@ export const deleteV2AdviceSessionBySessionIdGoalByGoalId = <ThrowOnError extend
 });
 
 /**
- * [BETA] Retrieve goal details for a specific goal in an advice session
+ * [BETA] Delete a goal from an advice session. Returns 204 on success.
  *
- * Important note(s) about the response:
- *
- * If a PDF is not generated yet - the `portfolio_data` will be `null`.
+ * The session must be open; deleting a goal from a completed session is rejected.
  */
 export const getV2AdviceSessionBySessionIdGoalByGoalId = <ThrowOnError extends boolean = false>(options: Options<GetV2AdviceSessionBySessionIdGoalByGoalIdData, ThrowOnError>): RequestResult<GetV2AdviceSessionBySessionIdGoalByGoalIdResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdErrors, ThrowOnError> => (options.client ?? client).get<GetV2AdviceSessionBySessionIdGoalByGoalIdResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -1008,14 +1033,14 @@ export const patchV2AdviceSessionBySessionIdGoalByGoalIdInformation = <ThrowOnEr
 });
 
 /**
- * [BETA] Read the K&E questions for an advice session.
+ * [BETA] Read the K&E sub-resource for an advice session.
  *
- * Returns the set of questions configured for the tenant
- * (`roboAdviceForm.knowledgeAndExperienceQuestions.questions`) joined with
- * the session's current answers. Each question carries its options,
- * whether it has been answered, the raw `value`, and (when the value
- * matches an option) a localised `value_text`. Also returns the section's
- * `advisor_notes`.
+ * `data` holds the user-editable answers (`{code: value}`, one entry per
+ * configured question — `null` when unanswered) plus the section's
+ * `advisor_notes`. `meta.questions` describes the questions configured for
+ * the tenant (`roboAdviceForm.knowledgeAndExperienceQuestions.questions`):
+ * each question's `label`, `options`, and whether it is multi-select.
+ * Resolve an answer's display label from `meta.questions[].options`.
  */
 export const getV2AdviceSessionBySessionIdKnowledgeAndExperience = <ThrowOnError extends boolean = false>(options: Options<GetV2AdviceSessionBySessionIdKnowledgeAndExperienceData, ThrowOnError>): RequestResult<GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses, GetV2AdviceSessionBySessionIdKnowledgeAndExperienceErrors, ThrowOnError> => (options.client ?? client).get<GetV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses, GetV2AdviceSessionBySessionIdKnowledgeAndExperienceErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -1050,8 +1075,12 @@ export const putV2AdviceSessionBySessionIdKnowledgeAndExperience = <ThrowOnError
 /**
  * [BETA] Read the risk-question sub-resource for an advice session.
  *
- * Returns the two integer option IDs and the section's advisor notes.
- * Each field is `null` when nothing has been written.
+ * `data` holds the two stored option IDs (`expectation_of_risk`,
+ * `risk_strategy`) and the section's `advisor_notes`; each is `null` when
+ * nothing has been written. `meta` lists the configured options for both
+ * questions (with i18n labels resolved by `?language`) plus the
+ * `is_risk2_hidden` tenant flag — resolve a stored ID against the matching
+ * option list for display.
  */
 export const getV2AdviceSessionBySessionIdRiskQuestion = <ThrowOnError extends boolean = false>(options: Options<GetV2AdviceSessionBySessionIdRiskQuestionData, ThrowOnError>): RequestResult<GetV2AdviceSessionBySessionIdRiskQuestionResponses, GetV2AdviceSessionBySessionIdRiskQuestionErrors, ThrowOnError> => (options.client ?? client).get<GetV2AdviceSessionBySessionIdRiskQuestionResponses, GetV2AdviceSessionBySessionIdRiskQuestionErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -1080,9 +1109,13 @@ export const putV2AdviceSessionBySessionIdRiskQuestion = <ThrowOnError extends b
 /**
  * [BETA] Read the sustainability sub-resource for an advice session.
  *
- * Returns the current `generic`, `alignment_criteria`, and
- * `preference_criteria` blocks. Each block is `null` when nothing has
- * been written for that section.
+ * `data` holds the current `generic`, `alignment_criteria`, and
+ * `preference_criteria` answers (each `null` when nothing has been written
+ * for that section). `meta` describes the configured structure for those
+ * same three sections (resolved by `?language`): the alignment granulation
+ * scale and enabled slots, the selectable preference themes, and the
+ * generic-assessment flags. Slot keys in `meta.alignment_criteria.slots`
+ * match the keys in `data.alignment_criteria`.
  */
 export const getV2AdviceSessionBySessionIdSustainability = <ThrowOnError extends boolean = false>(options: Options<GetV2AdviceSessionBySessionIdSustainabilityData, ThrowOnError>): RequestResult<GetV2AdviceSessionBySessionIdSustainabilityResponses, GetV2AdviceSessionBySessionIdSustainabilityErrors, ThrowOnError> => (options.client ?? client).get<GetV2AdviceSessionBySessionIdSustainabilityResponses, GetV2AdviceSessionBySessionIdSustainabilityErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

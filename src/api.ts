@@ -96,4 +96,48 @@ client.setConfig({
   auth: () => getAccessToken(),
 });
 
+// Capture request bodies so a retried request (below) can be replayed.
+const pendingBodies = new WeakMap<Request, string>();
+client.interceptors.request.use(async (request) => {
+  if (request.method !== "GET" && request.method !== "HEAD" && request.body) {
+    try {
+      pendingBodies.set(request, await request.clone().text());
+    } catch {
+      /* body not clonable — skip replay */
+    }
+  }
+  return request;
+});
+
+// On a 401 the cached token may have expired or been revoked: refresh it and
+// retry the request once. The token endpoint itself is excluded to avoid loops.
+client.interceptors.response.use(async (response, request, opts) => {
+  if (
+    response.status !== 401 ||
+    request.url.includes("/auth/token") ||
+    request.headers.get("x-da-retried")
+  ) {
+    return response;
+  }
+  resetToken();
+  let token: string;
+  try {
+    token = await getAccessToken(true);
+  } catch {
+    return response;
+  }
+  const headers = new Headers(request.headers);
+  headers.set("Authorization", `Bearer ${token}`);
+  headers.set("x-da-retried", "1");
+  const body = pendingBodies.get(request);
+  const doFetch = (opts as { fetch?: typeof fetch })?.fetch ?? fetch;
+  return doFetch(
+    new Request(request.url, {
+      method: request.method,
+      headers,
+      ...(body !== undefined ? { body } : {}),
+    }),
+  );
+});
+
 export { client };

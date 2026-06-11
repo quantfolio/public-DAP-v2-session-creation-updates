@@ -2,7 +2,7 @@ import { useState } from "react";
 import { RunButton } from "@/components/ui/run-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { NativeSelect as Select } from "@/components/ui/native-select";
 import {
   Card,
   CardContent,
@@ -10,58 +10,62 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { JsonPreview } from "@/components/JsonPreview";
+import { PayloadTabs } from "@/components/PayloadTabs";
 import { SourceInfo } from "@/components/SourceInfo";
+import { AdvisorNotesField, type AdvisorNoteFlag } from "@/components/AdvisorNotesField";
+import { adviceInformationCode } from "@/lib/codegen";
 import type { ApiResult } from "@/lib/api";
 
-interface LiveField {
+interface FieldDef {
   code: string;
-  label: string;
+  label: string | null;
   type: string;
-  value: string | null;
-}
-interface ConfigField {
-  code: string;
-  label: string;
-  componentType: string;
-  options: { value: string; label: string }[];
-}
-
-// Settings codes can be stale (e.g. prefixed), so match on suffix either way.
-function matchOptions(code: string, config: ConfigField[]) {
-  const hit = config.find(
-    (c) => c.code === code || c.code.endsWith(code) || code.endsWith(c.code),
-  );
-  return hit?.options ?? [];
+  required: boolean;
+  depends_on: { code: string; value: string } | null;
+  options: { label: string; value: string }[];
 }
 
 export function AdviceInformation({
   run,
+  notesFlag,
 }: {
   run: (method: string, path: string, body?: unknown) => Promise<ApiResult>;
+  notesFlag?: AdvisorNoteFlag;
 }) {
-  const [fields, setFields] = useState<(LiveField & { options: { value: string; label: string }[] })[]>([]);
+  const [fields, setFields] = useState<FieldDef[]>([]);
   const [values, setValues] = useState<Record<string, string>>({});
   const [advisorNotes, setAdvisorNotes] = useState("");
+  const notes = notesFlag?.enabled ? advisorNotes || null : null;
 
   async function load() {
     const r = await run("GET", "/api/advice-information");
-    const live = (r.body as { data?: LiveField[] } | null)?.data ?? [];
-    const config: ConfigField[] = await fetch("/api/config/advice-information").then((res) => res.json());
-    const merged = live.map((f) => ({ ...f, options: matchOptions(f.code, config) }));
-    setFields(merged);
-    const prefilled: Record<string, string> = {};
-    for (const f of live) if (f.value != null) prefilled[f.code] = f.value;
-    setValues(prefilled);
+    const body = r.body as
+      | {
+          data?: { advisor_notes?: string | null; answers?: { code: string; value: string | null }[] };
+          meta?: { fields?: FieldDef[] };
+        }
+      | null;
+    setFields(body?.meta?.fields ?? []);
+    setAdvisorNotes(body?.data?.advisor_notes ?? "");
+    const vals: Record<string, string> = {};
+    for (const a of body?.data?.answers ?? []) if (a.value != null) vals[a.code] = a.value;
+    setValues(vals);
   }
 
-  const fieldsBody = Object.fromEntries(Object.entries(values).filter(([, v]) => v !== ""));
+  // A field shows only if its dependency (if any) is satisfied.
+  const isVisible = (f: FieldDef) => !f.depends_on || values[f.depends_on.code] === f.depends_on.value;
+  const visibleFields = fields.filter(isVisible);
+  // PATCH body mirrors the GET: { data: { advisor_notes, answers: [{ code, value }] } }
+  const answers = visibleFields
+    .filter((f) => (values[f.code] ?? "") !== "")
+    .map((f) => ({ code: f.code, value: values[f.code] }));
+  const body = { data: { advisor_notes: notes, answers } };
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Advice information</CardTitle>
-        <CardDescription>GET / PATCH /advice-information · options from settings</CardDescription>
+        <CardDescription>GET / PATCH /advice-information · fields from the GET response</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <SourceInfo
@@ -70,16 +74,20 @@ export function AdviceInformation({
               label: "Endpoint",
               value: "GET·PATCH /v2/advice_session/{session_id}/advice_information",
             },
-            { label: "Options", value: "settings → roboAdviceForm.adviceInformation.fields" },
+            { label: "Fields", value: "GET response → meta.fields (code, type, options, depends_on)" },
           ]}
+          drift="PATCH body is { data: { advisor_notes, answers: [{code, value}] } }, and the GET returns meta.fields — both unlike the spec."
         />
         <RunButton variant="secondary" onRun={load}>
           Load fields
         </RunButton>
 
-        {fields.map((f) => (
+        {visibleFields.map((f) => (
           <div key={f.code} className="space-y-1.5">
-            <Label>{f.label}</Label>
+            <Label>
+              {f.label ?? f.code}
+              {f.required ? " *" : ""}
+            </Label>
             {f.options.length > 0 ? (
               <Select
                 value={values[f.code] ?? ""}
@@ -94,6 +102,7 @@ export function AdviceInformation({
               </Select>
             ) : (
               <Input
+                type={f.type === "numberInput" ? "number" : "text"}
                 value={values[f.code] ?? ""}
                 onChange={(e) => setValues((p) => ({ ...p, [f.code]: e.target.value }))}
               />
@@ -101,25 +110,13 @@ export function AdviceInformation({
           </div>
         ))}
 
-        {fields.length > 0 && (
-          <>
-            <div className="space-y-1.5">
-              <Label htmlFor="ai-notes">Advisor notes</Label>
-              <Input id="ai-notes" value={advisorNotes} onChange={(e) => setAdvisorNotes(e.target.value)} />
-            </div>
-            <JsonPreview value={{ advisor_notes: advisorNotes || null, fields: fieldsBody }} />
-            <RunButton
-              onRun={() =>
-                run("PATCH", "/api/advice-information", {
-                  advisor_notes: advisorNotes || null,
-                  fields: fieldsBody,
-                })
-              }
-            >
-              Patch
-            </RunButton>
-          </>
-        )}
+        <AdvisorNotesField flag={notesFlag} value={advisorNotes} onChange={setAdvisorNotes} />
+        <PayloadTabs
+          payload={body}
+          code={adviceInformationCode()}
+          endpoint={{ method: "PATCH", path: "/v2/advice_session/{session_id}/advice_information" }}
+        />
+        <RunButton onRun={() => run("PATCH", "/api/advice-information", body)}>Patch</RunButton>
       </CardContent>
     </Card>
   );

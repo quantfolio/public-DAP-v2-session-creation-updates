@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { RunButton } from "@/components/ui/run-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { NativeSelect as Select } from "@/components/ui/native-select";
 import {
   Card,
   CardContent,
@@ -11,23 +11,29 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SourceInfo } from "@/components/SourceInfo";
-import { JsonPreview } from "@/components/JsonPreview";
+import { PayloadTabs } from "@/components/PayloadTabs";
+import { AdvisorNotesField, type AdvisorNoteFlag } from "@/components/AdvisorNotesField";
+import { sustainabilityCode } from "@/lib/codegen";
 import type { ApiResult } from "@/lib/api";
 
 interface Config {
-  themes: { id: string; label: string }[];
+  exclusionCriteria: { id: string; label: string }[];
   steps: { value: number; label: string }[];
   alignmentCriteria: { key: string; title: string }[];
 }
 
-const EMPTY: Config = { themes: [], steps: [], alignmentCriteria: [] };
+const EMPTY: Config = { exclusionCriteria: [], steps: [], alignmentCriteria: [] };
 
 export function Sustainability({
   run,
   authed,
+  lang,
+  notesFlag,
 }: {
   run: (method: string, path: string, body?: unknown) => Promise<ApiResult>;
   authed: boolean;
+  lang: string;
+  notesFlag?: AdvisorNoteFlag;
 }) {
   const [config, setConfig] = useState<Config>(EMPTY);
   const [genericAnswer, setGenericAnswer] = useState(""); // "", "true", "false"
@@ -41,25 +47,25 @@ export function Sustainability({
       setConfig(EMPTY);
       return;
     }
-    fetch("/api/config/sustainability")
+    fetch(`/api/config/sustainability?lang=${lang}`)
       .then((r) => r.json())
       .then((c) =>
         setConfig({
-          themes: Array.isArray(c.themes) ? c.themes : [],
+          exclusionCriteria: Array.isArray(c.exclusionCriteria) ? c.exclusionCriteria : [],
           steps: Array.isArray(c.steps) ? c.steps : [],
           alignmentCriteria: Array.isArray(c.alignmentCriteria) ? c.alignmentCriteria : [],
         }),
       )
       .catch(() => setConfig(EMPTY));
-  }, [authed]);
+  }, [authed, lang]);
 
-  function toggleTheme(id: string) {
+  function toggleExclusion(id: string) {
     setThemes((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]));
   }
 
   const body = {
     generic: { answer: genericAnswer === "" ? null : genericAnswer === "true", comment: genericComment || null },
-    preference_criteria: { advisor_notes: prefNotes || null, themes },
+    preference_criteria: { advisor_notes: notesFlag?.enabled ? prefNotes || null : null, themes },
     alignment_criteria: Object.fromEntries(
       config.alignmentCriteria
         .filter((c) => (alignValues[c.key] ?? "") !== "")
@@ -92,7 +98,7 @@ export function Sustainability({
         <SourceInfo
           items={[
             { label: "Endpoint", value: "GET·PUT /v2/advice_session/{session_id}/sustainability" },
-            { label: "Themes", value: "settings → themes" },
+            { label: "Exclusions", value: "settings → roboAdvice.sustainability.sustainabilityPreference.config" },
             { label: "Alignment", value: "settings → roboAdvice.sustainability.alignmentCriteria{N}" },
           ]}
         />
@@ -118,22 +124,18 @@ export function Sustainability({
           />
         </div>
 
-        {/* Preference criteria — themes */}
+        {/* Preference criteria — exclusion criteria (sent as preference_criteria.themes) */}
         <div className="space-y-2">
-          <p className="text-sm font-semibold">Preference themes</p>
+          <p className="text-sm font-semibold">Exclusion criteria</p>
           <div className="flex flex-wrap gap-3">
-            {config.themes.map((t) => (
+            {config.exclusionCriteria.map((t) => (
               <label key={t.id} className="flex items-center gap-1.5 text-sm">
-                <input type="checkbox" checked={themes.includes(t.id)} onChange={() => toggleTheme(t.id)} />
+                <input type="checkbox" checked={themes.includes(t.id)} onChange={() => toggleExclusion(t.id)} />
                 {t.label} <span className="text-muted-foreground">({t.id})</span>
               </label>
             ))}
           </div>
-          <Input
-            placeholder="preference advisor notes (optional)"
-            value={prefNotes}
-            onChange={(e) => setPrefNotes(e.target.value)}
-          />
+          <AdvisorNotesField flag={notesFlag} value={prefNotes} onChange={setPrefNotes} />
         </div>
 
         {/* Alignment criteria */}
@@ -157,7 +159,11 @@ export function Sustainability({
           ))}
         </div>
 
-        <JsonPreview value={body} />
+        <PayloadTabs
+          payload={body}
+          code={sustainabilityCode()}
+          endpoint={{ method: "PUT", path: "/v2/advice_session/{session_id}/sustainability" }}
+        />
         <RunButton onRun={() => run("PUT", "/api/sustainability", body)}>Submit</RunButton>
       </CardContent>
     </Card>

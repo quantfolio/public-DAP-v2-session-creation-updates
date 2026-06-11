@@ -1,8 +1,15 @@
-import { Router } from "express";
+import { Router, type Response } from "express";
+import { readFile } from "node:fs/promises";
 import { adviceSession } from "./advice-session.js";
+import {
+  getV1Advisor,
+  getV1Investor,
+  getV1InvestorByInvestorId,
+  postV1Investor,
+  postV1StateSession,
+} from "./client/sdk.gen.js";
 import { DEFAULT_SESSION_ID, DEFAULT_GOAL_TYPE } from "./constants.js";
 import { parseAnswers } from "./knowledge-and-experience.js";
-import { parseFields } from "./advice-information.js";
 import {
   adviceInformationConfig,
   financialSituationConfig,
@@ -10,8 +17,15 @@ import {
   goalInformationConfig,
   riskQuestionConfig,
   sustainabilityConfig,
+  advisorNotesConfig,
+  goalHorizonConfig,
+  countriesConfig,
+  clientInformationConfig,
+  languagesConfig,
+  getAllSettings,
 } from "./dap-settings.js";
 import { login, logout, authStatus } from "./api.js";
+import { buildEndpointCsv } from "./export-csv.js";
 
 export const router = Router();
 
@@ -43,58 +57,104 @@ router.post("/auth/logout", (_req, res) => {
 // Require authentication for everything except health and auth routes
 // (config routes fetch the authenticated tenant's settings, so they need auth too).
 router.use((req, res, next) => {
-  if (/\/(health|auth)(\/|$)/.test(req.path) || authStatus().authenticated) {
+  if (/\/(health|auth|readme)(\/|$)/.test(req.path) || authStatus().authenticated) {
     next();
     return;
   }
   res.status(401).json({ error: "Not authenticated. Log in with client credentials first." });
 });
 
+// Selected UI language from ?lang= (falls back to English).
+function langOf(req: { query: Record<string, unknown> }): string {
+  const l = req.query.lang;
+  return typeof l === "string" && l ? l : "en";
+}
+
 // --- Form config derived from the tenant's live settings (/v2/settings/deepalpha).
 // These require auth (they fetch the authenticated tenant's settings).
-router.get("/config/goal-types", async (_req, res) => {
+router.get("/config/languages", async (_req, res) => {
   try {
-    res.json(await goalTypesConfig());
+    res.json(await languagesConfig());
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }
 });
 
-router.get("/config/goal-information", async (_req, res) => {
+router.get("/config/goal-types", async (req, res) => {
   try {
-    res.json(await goalInformationConfig());
+    res.json(await goalTypesConfig(langOf(req)));
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }
 });
 
-router.get("/config/sustainability", async (_req, res) => {
+router.get("/config/goal-information", async (req, res) => {
   try {
-    res.json(await sustainabilityConfig());
+    res.json(await goalInformationConfig(langOf(req)));
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }
 });
 
-router.get("/config/risk-question", async (_req, res) => {
+router.get("/config/advisor-notes", async (_req, res) => {
   try {
-    res.json(await riskQuestionConfig());
+    res.json(await advisorNotesConfig());
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }
 });
 
-router.get("/config/advice-information", async (_req, res) => {
+router.get("/config/sustainability", async (req, res) => {
   try {
-    res.json(await adviceInformationConfig());
+    res.json(await sustainabilityConfig(langOf(req)));
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }
 });
 
-router.get("/config/financial-situation", async (_req, res) => {
+router.get("/config/risk-question", async (req, res) => {
   try {
-    res.json(await financialSituationConfig());
+    res.json(await riskQuestionConfig(langOf(req)));
+  } catch (err) {
+    res.status(502).json({ error: (err as Error).message });
+  }
+});
+
+router.get("/config/countries", async (_req, res) => {
+  try {
+    res.json(await countriesConfig());
+  } catch (err) {
+    res.status(502).json({ error: (err as Error).message });
+  }
+});
+
+router.get("/config/client-information", async (req, res) => {
+  try {
+    res.json(await clientInformationConfig(langOf(req)));
+  } catch (err) {
+    res.status(502).json({ error: (err as Error).message });
+  }
+});
+
+router.get("/config/goal-horizons", async (req, res) => {
+  try {
+    res.json(await goalHorizonConfig(langOf(req)));
+  } catch (err) {
+    res.status(502).json({ error: (err as Error).message });
+  }
+});
+
+router.get("/config/advice-information", async (req, res) => {
+  try {
+    res.json(await adviceInformationConfig(langOf(req)));
+  } catch (err) {
+    res.status(502).json({ error: (err as Error).message });
+  }
+});
+
+router.get("/config/financial-situation", async (req, res) => {
+  try {
+    res.json(await financialSituationConfig(langOf(req)));
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }
@@ -109,15 +169,102 @@ function sessionId(req: { query: Record<string, unknown> }): string {
     : DEFAULT_SESSION_ID;
 }
 
+// Send the SDK result to the client, and echo the *real* upstream DeepAlpha
+// request (method, full v2 URL, headers — bearer redacted) as a response header
+// so the dev tool can show the actual call it made, not just the proxy hop.
+function relay(
+  res: Response,
+  result: { data?: unknown; error?: unknown; request?: Request; response?: { status?: number } },
+  successStatus = 200,
+) {
+  const { data, error, request, response } = result;
+  if (request) {
+    const headers: Record<string, string> = {};
+    request.headers.forEach((value, key) => {
+      headers[key] = key.toLowerCase() === "authorization" ? "Bearer [REDACTED]" : value;
+    });
+    res.setHeader(
+      "X-Upstream-Request",
+      encodeURIComponent(JSON.stringify({ method: request.method, url: request.url, headers })),
+    );
+  }
+  if (error) {
+    res.status(response?.status ?? 500).json({ error });
+    return;
+  }
+  res.status(successStatus).json(data);
+}
+
 router.get("/health", (_req, res) => {
   res.json({ status: "healthy", uptime: process.uptime() });
+});
+
+// Integration guide (raw markdown) — surfaced in the dev tool's Docs view.
+router.get("/readme", async (_req, res) => {
+  try {
+    res.type("text/markdown").send(await readFile("README.md", "utf8"));
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// --- Setup: advisors, investors, sessions (v1 `state` — no v2 equivalent) ----
+type InvestorBody = NonNullable<Parameters<typeof postV1Investor>[0]>["body"];
+type SessionBody = NonNullable<Parameters<typeof postV1StateSession>[0]>["body"];
+
+router.get("/advisors", async (_req, res) => {
+  relay(res, await getV1Advisor());
+});
+
+router.get("/investors", async (_req, res) => {
+  relay(res, await getV1Investor());
+});
+
+// Create an investor. Body (StateInvestorPayload): requires `country`, `investorType`.
+router.post("/investors", async (req, res) => {
+  relay(res, await postV1Investor({ body: (req.body ?? {}) as InvestorBody }), 201);
+});
+
+// Create an advice session. Body (CreateStateSessionPayload): requires `advisor_id`, `name`.
+// (v1 `state` — there is a beta POST /v2/advice_session, but it's not ready yet.)
+router.post("/sessions", async (req, res) => {
+  relay(res, await postV1StateSession({ body: (req.body ?? {}) as SessionBody }), 201);
+});
+
+// Resolve the investor type ("person" | "company") of the active session's investor,
+// so forms can infer their subject.
+router.get("/session-investor", async (req, res) => {
+  const sess = await adviceSession.get({ path: { session_id: sessionId(req) } });
+  const sessData = (sess.data as { data?: { investor_id?: string }; investor_id?: string } | undefined);
+  const investorId = sessData?.data?.investor_id ?? sessData?.investor_id;
+  if (!investorId) {
+    res.json({ investorId: null, investorType: null });
+    return;
+  }
+  const inv = await getV1InvestorByInvestorId({ path: { investor_id: investorId } });
+  const invData = inv.data as { investorType?: string; data?: { investorType?: string } } | undefined;
+  const investorType = invData?.investorType ?? invData?.data?.investorType ?? null;
+  res.json({ investorId, investorType });
+});
+
+// Export a CSV data-modelling mapping document (flattened fields across the
+// covered endpoints; spec structure + live examples + drift + settings options).
+router.get("/export.csv", async (req, res) => {
+  try {
+    const csv = await buildEndpointCsv(sessionId(req));
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", 'attachment; filename="endpoint-mapping.csv"');
+    res.send(csv);
+  } catch (err) {
+    res.status(502).json({ error: (err as Error).message });
+  }
 });
 
 // List advice sessions (DeepAlpha v2). Query params are passed straight through,
 // e.g. ?status=open&page=1&size=20
 router.get("/advice-sessions", async (req, res) => {
   const { status, page, size } = req.query;
-  const { data, error, response } = await adviceSession.list({
+  const { data, error, request, response } = await adviceSession.list({
     query: {
       "filter[status]": status as never,
       "page[number]": page ? Number(page) : undefined,
@@ -125,19 +272,12 @@ router.get("/advice-sessions", async (req, res) => {
     },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
-// Create a goal on the (currently hardcoded) advice session.
-// Body: { name: string, horizon_value: number, description?: string }
-// The goal type is sent in the API's `type` field (growYourWealth). `type` is
-// accepted by the live API but missing from the OpenAPI spec, hence the cast.
-type CreateGoalBody = NonNullable<Parameters<typeof adviceSession.createGoal>[0]>["body"];
-
+// Create a goal on the advice session.
+// Body: { name, horizon_value, type (goal type, e.g. growYourWealth), icon (url) }.
+// `type` and `icon` are both part of the v2 SessionGoalCreateRequestSchemaV2.
 router.post("/goals", async (req, res) => {
   const { name, horizon_value, description, type, icon } = req.body ?? {};
 
@@ -148,7 +288,7 @@ router.post("/goals", async (req, res) => {
     return;
   }
 
-  const { data, error, response } = await adviceSession.createGoal({
+  const { data, error, request, response } = await adviceSession.createGoal({
     path: { session_id: sessionId(req) },
     body: {
       name,
@@ -156,27 +296,37 @@ router.post("/goals", async (req, res) => {
       description,
       type: typeof type === "string" && type ? type : DEFAULT_GOAL_TYPE,
       icon: typeof icon === "string" && icon ? icon : undefined,
-    } as unknown as CreateGoalBody,
+    },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.status(201).json(data);
+  relay(res, { data, error, request, response }, 201);
+});
+
+// List the goals on the session.
+router.get("/goals", async (req, res) => {
+  const { data, error, request, response } = await adviceSession.listGoals({
+    path: { session_id: sessionId(req) },
+  });
+
+  relay(res, { data, error, request, response });
+});
+
+// Get a single goal (includes its `type`, used to scope goal-information fields).
+router.get("/goals/:goalId", async (req, res) => {
+  const { data, error, request, response } = await adviceSession.getGoal({
+    path: { session_id: sessionId(req), goal_id: req.params.goalId },
+  });
+
+  relay(res, { data, error, request, response });
 });
 
 // Get a goal's information (advisor notes + config-driven fields).
 router.get("/goals/:goalId/information", async (req, res) => {
-  const { data, error, response } = await adviceSession.getGoalInformation({
+  const { data, error, request, response } = await adviceSession.getGoalInformation({
     path: { session_id: sessionId(req), goal_id: req.params.goalId },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Update a goal's information (PATCH).
@@ -188,7 +338,7 @@ router.patch("/goals/:goalId/information", async (req, res) => {
     return;
   }
 
-  const { data, error, response } = await adviceSession.updateGoalInformation({
+  const { data, error, request, response } = await adviceSession.updateGoalInformation({
     path: { session_id: sessionId(req), goal_id: req.params.goalId },
     body: {
       advisor_notes: body.advisor_notes ?? null,
@@ -196,24 +346,25 @@ router.patch("/goals/:goalId/information", async (req, res) => {
     },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
+  relay(res, { data, error, request, response });
+});
+
+// Full tenant settings (GET /v2/settings/deepalpha).
+router.get("/settings", async (_req, res) => {
+  try {
+    res.json({ settings: await getAllSettings() });
+  } catch (err) {
+    res.status(502).json({ error: (err as Error).message });
   }
-  res.json(data);
 });
 
 // Get the financial situation for the session.
 router.get("/financial-situation", async (req, res) => {
-  const { data, error, response } = await adviceSession.getFinancialSituation({
+  const { data, error, request, response } = await adviceSession.getFinancialSituation({
     path: { session_id: sessionId(req) },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Update the financial situation (PATCH). Body follows FinancialSituationUpdateSchemaV2:
@@ -231,7 +382,7 @@ router.patch("/financial-situation", async (req, res) => {
     return;
   }
 
-  const { data, error, response } = await adviceSession.updateFinancialSituation({
+  const { data, error, request, response } = await adviceSession.updateFinancialSituation({
     path: { session_id: sessionId(req) },
     body: {
       advisor_notes: body.advisor_notes ?? null,
@@ -240,63 +391,39 @@ router.patch("/financial-situation", async (req, res) => {
     },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Get the advice information fields (and current values) for the session.
 router.get("/advice-information", async (req, res) => {
-  const { data, error, response } = await adviceSession.getAdviceInformation({
+  const { data, error, request, response } = await adviceSession.getAdviceInformation({
     path: { session_id: sessionId(req) },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
-// Update advice information fields (PATCH).
-// Body: { advisor_notes?: string | null, fields: { [fieldCode]: value } }
-router.patch("/advice-information", async (req, res) => {
-  let fields;
-  try {
-    fields = await parseFields(req.body?.fields, sessionId(req));
-  } catch (err) {
-    res.status(400).json({ error: (err as Error).message });
-    return;
-  }
+// Update advice information (PATCH). The live API expects the GET-shaped body:
+//   { data: { advisor_notes?: string | null, answers: [{ code, value }] } }
+// (the spec's { advisor_notes, fields } is stale), so we forward it as-is.
+type AdviceInfoBody = NonNullable<Parameters<typeof adviceSession.updateAdviceInformation>[0]>["body"];
 
-  const { data, error, response } = await adviceSession.updateAdviceInformation({
+router.patch("/advice-information", async (req, res) => {
+  const { data, error, request, response } = await adviceSession.updateAdviceInformation({
     path: { session_id: sessionId(req) },
-    body: {
-      advisor_notes: req.body?.advisor_notes ?? null,
-      fields,
-    },
+    body: (req.body ?? {}) as unknown as AdviceInfoBody,
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Get the knowledge & experience questions (and current answers) for the session.
 router.get("/knowledge-and-experience", async (req, res) => {
-  const { data, error, response } = await adviceSession.getKnowledgeAndExperience({
+  const { data, error, request, response } = await adviceSession.getKnowledgeAndExperience({
     path: { session_id: sessionId(req) },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Submit knowledge & experience answers.
@@ -310,7 +437,7 @@ router.put("/knowledge-and-experience", async (req, res) => {
     return;
   }
 
-  const { data, error, response } = await adviceSession.setKnowledgeAndExperience({
+  const { data, error, request, response } = await adviceSession.setKnowledgeAndExperience({
     path: { session_id: sessionId(req) },
     body: {
       advisor_notes: req.body?.advisor_notes ?? null,
@@ -318,31 +445,23 @@ router.put("/knowledge-and-experience", async (req, res) => {
     },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Get the risk question values for the session.
 router.get("/risk-question", async (req, res) => {
-  const { data, error, response } = await adviceSession.getRiskQuestion({
+  const { data, error, request, response } = await adviceSession.getRiskQuestion({
     path: { session_id: sessionId(req) },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Submit risk question answers (PUT).
 // Body: { advisor_notes?: string | null, expectation_of_risk?: number | null, risk_strategy?: number | null }
 router.put("/risk-question", async (req, res) => {
   const body = req.body ?? {};
-  const { data, error, response } = await adviceSession.setRiskQuestion({
+  const { data, error, request, response } = await adviceSession.setRiskQuestion({
     path: { session_id: sessionId(req) },
     body: {
       advisor_notes: body.advisor_notes ?? null,
@@ -352,30 +471,22 @@ router.put("/risk-question", async (req, res) => {
     },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Get the sustainability values for the session.
 router.get("/sustainability", async (req, res) => {
-  const { data, error, response } = await adviceSession.getSustainability({
+  const { data, error, request, response } = await adviceSession.getSustainability({
     path: { session_id: sessionId(req) },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Submit sustainability (PUT). Body: { generic, preference_criteria, alignment_criteria }.
 router.put("/sustainability", async (req, res) => {
   const body = req.body ?? {};
-  const { data, error, response } = await adviceSession.setSustainability({
+  const { data, error, request, response } = await adviceSession.setSustainability({
     path: { session_id: sessionId(req) },
     body: {
       generic: body.generic ?? null,
@@ -384,22 +495,14 @@ router.put("/sustainability", async (req, res) => {
     },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });
 
 // Fetch a single advice session by id.
 router.get("/advice-sessions/:sessionId", async (req, res) => {
-  const { data, error, response } = await adviceSession.get({
+  const { data, error, request, response } = await adviceSession.get({
     path: { session_id: req.params.sessionId },
   });
 
-  if (error) {
-    res.status(response?.status ?? 500).json({ error });
-    return;
-  }
-  res.json(data);
+  relay(res, { data, error, request, response });
 });

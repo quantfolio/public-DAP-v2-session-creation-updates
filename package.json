@@ -9,6 +9,7 @@
     "start": "node dist/index.js",
     "gen": "openapi-ts",
     "typecheck": "tsc --noEmit",
+    "smoke": "vite-node scripts/smoke.ts",
     "web": "pnpm -C web dev",
     "web:install": "pnpm -C web install",
     "web:build": "pnpm -C web build"
