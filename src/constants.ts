@@ -1,8 +1,7 @@
-// Hardcoded values used during development. Replace with real inputs later.
-
-// Default advice session used by the goal-creation endpoint while we don't yet
-// thread a real session id through the request.
-export const DEFAULT_SESSION_ID = "986514b1-1134-435f-a6be-aaab27ea4f6d";
+// Optional default advice session (env: `dap_session_id`). Empty unless set —
+// the dev tool sets the active session id on every request, so this is only a
+// fallback for direct API calls made without a `?session_id=`.
+export const DEFAULT_SESSION_ID = process.env.dap_session_id ?? "";
 
 // The goal type sent in the API's `type` field on goal creation.
 export const DEFAULT_GOAL_TYPE = "growYourWealth";

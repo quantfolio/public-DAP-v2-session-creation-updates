@@ -3,7 +3,6 @@
 // (types/required/enum/description); response rows for GET endpoints are annotated
 // with a live example value and a drift flag (spec-only / live-only). The Settings
 // endpoint is intentionally excluded.
-import { readFile } from "node:fs/promises";
 import { getAccessToken, authStatus } from "./api.js";
 import {
   clientInformationConfig,
@@ -63,7 +62,10 @@ interface FieldRow {
 
 let specCache: Spec | null = null;
 async function loadSpec(): Promise<Spec> {
-  if (!specCache) specCache = JSON.parse(await readFile("openapi.json", "utf8")) as Spec;
+  if (!specCache) {
+    const baseUrl = authStatus().uri ?? DEFAULT_URI;
+    specCache = (await fetch(`${baseUrl}/openapi.json`).then((r) => r.json())) as Spec;
+  }
   return specCache;
 }
 

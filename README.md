@@ -27,7 +27,7 @@ Credentials may be supplied two ways:
 - the **Authentication** card in the UI (preferred), or
 - a `.env` file (gitignored) as a default: `dap_uri`, `dap_client_id`, `dap_client_secret` (see `.env.example`).
 
-Regenerate the typed client after a spec change: `pnpm gen` (reads `openapi.json`).
+Regenerate the typed client after a spec change: `pnpm gen` (fetches the spec from `https://api.test.deepalpha.dev/openapi.json`).
 
 ---
 
@@ -94,7 +94,7 @@ It does **not** cover the rest of the DeepAlpha API (analyze, robo, proposal/ord
 
 The **Export CSV** button (header) downloads a data‑modelling mapping document — one row per flattened leaf field across the covered endpoints, for both **input** (request) and **output** (response). Columns: `group, endpoint, method, direction, subject, field, type, required, options, enum, format, example, drift, description`.
 
-- Structure comes from `openapi.json`; response fields of GET endpoints are annotated with a **live example** and a **drift** flag (`spec-only` / `live-only`) so you can see where the live API diverges.
+- Structure comes from the live OpenAPI spec; response fields of GET endpoints are annotated with a **live example** and a **drift** flag (`spec-only` / `live-only`) so you can see where the live API diverges.
 - Settings‑driven fields are overlaid with their available **options**, split by **subject** (`person` / `company`) where the settings differ (investor/clientInformation, financial situation).
 - Served by `GET /api/export.csv` (or per session: `?session_id=…`). The Settings endpoint is excluded.
 

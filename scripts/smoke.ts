@@ -6,7 +6,7 @@
 // Env: SMOKE_BASE (default http://localhost:3000), SMOKE_SESSION_ID, and — if the
 // server isn't already authenticated — dap_uri / dap_client_id / dap_client_secret.
 const BASE = process.env.SMOKE_BASE ?? "http://localhost:3000";
-const SESSION = process.env.SMOKE_SESSION_ID ?? "986514b1-1134-435f-a6be-aaab27ea4f6d";
+const SESSION = process.env.SMOKE_SESSION_ID ?? process.env.dap_session_id ?? "";
 
 const ROUTES: { path: string; session?: boolean }[] = [
   { path: "/api/health" },
@@ -69,7 +69,14 @@ async function main(): Promise<void> {
   await ensureAuth();
 
   let failed = 0;
+  let skipped = 0;
   for (const r of ROUTES) {
+    // Session-scoped routes need a session id (SMOKE_SESSION_ID / dap_session_id).
+    if (r.session && !SESSION) {
+      skipped++;
+      console.log(`- skip          ${r.path} (set SMOKE_SESSION_ID to check)`);
+      continue;
+    }
     const url = r.session
       ? `${BASE}${r.path}${r.path.includes("?") ? "&" : "?"}session_id=${SESSION}`
       : `${BASE}${r.path}`;
@@ -85,7 +92,8 @@ async function main(): Promise<void> {
     console.log(`${ok ? "✓" : "✗"} ${String(status).padEnd(4)} ${`${Date.now() - start}ms`.padStart(7)}  ${r.path}`);
   }
 
-  console.log(`\n${ROUTES.length - failed}/${ROUTES.length} passed`);
+  const checked = ROUTES.length - skipped;
+  console.log(`\n${checked - failed}/${checked} passed${skipped ? ` (${skipped} skipped — no session)` : ""}`);
   process.exit(failed ? 1 : 0);
 }
 

@@ -27,12 +27,8 @@ import { RiskQuestion } from "@/sections/RiskQuestion";
 import { Sustainability } from "@/sections/Sustainability";
 import { Maximize2 } from "lucide-react";
 
-const DEFAULT_SESSION_ID = "986514b1-1134-435f-a6be-aaab27ea4f6d";
-
 export function App() {
-  const [sessionId, setSessionId] = useState(
-    () => localStorage.getItem("da_session_id") || DEFAULT_SESSION_ID,
-  );
+  const [sessionId, setSessionId] = useState(() => localStorage.getItem("da_session_id") || "");
 
   // Persist the active session id across reloads.
   useEffect(() => {
