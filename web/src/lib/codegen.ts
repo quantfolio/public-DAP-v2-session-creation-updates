@@ -44,17 +44,17 @@ const body = {
 export function createSessionCode(): string {
   return join(
     PREAMBLE,
-    `// 2. You need an advisor_id (GET /v1/advisor) and usually an investor_id
+    `// 2. You need an advisor_id (GET /v1/advisor) and an existing investor_id
 //    (POST /v1/investor or GET /v1/investor).`,
-    `// 3. Create the advice session — advisor_id + name are required
+    `// 3. Create the advice session (v2) — advisor_id + investor_id + name required
 const body = {
   advisor_id,
-  name: "New advice session",
   investor_id,
-  advice_type: "MiFIID II investment Advice", // | "Order Execution"
+  name: "New advice session",
+  advice_type: "mifid", // "mifid" | "order_execution" (defaults to "mifid")
 };`,
-    "// 4. POST → returns { session_id, ... } — use that id for all v2 sub-resources\n" +
-      send("POST", "/v1/state_session"),
+    "// 4. POST → returns { data: { session_id, ... } } — use that id for all sub-resources\n" +
+      send("POST", "/v2/advice_session"),
   );
 }
 
@@ -96,12 +96,12 @@ const fields = (setting("roboAdviceForm.goalInformation.fields") ?? [])
     `// 3. Map selections → fields. Keys are the FULL setting name (incl.
 //    "goalInformation." prefix). Options may carry \`conditionalFields\` that
 //    apply only when selected — include those too (recurse).
-const selections: Record<string, string> = {
+const answers: Record<string, string> = {
   "goalInformation.lifeInsuranceNeed": "receivedDonation",
   "goalInformation.donorControl": "no",          // revealed by the choice above
   "goalInformation.investmentRules": "noChange",
 };
-const body = { advisor_notes: null, fields: selections };`,
+const body = { advisor_notes: null, answers };`,
     "// 4. Save\n" + send("PATCH", "/v2/advice_session/${sessionId}/goal/${goalId}/information"),
   );
 }

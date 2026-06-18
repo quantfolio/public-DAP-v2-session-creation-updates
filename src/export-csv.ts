@@ -29,7 +29,7 @@ const ENDPOINTS: Endpoint[] = [
   { group: "Setup", method: "GET", path: "/v1/investor", live: true },
   { group: "Setup", method: "POST", path: "/v1/investor" },
   { group: "Setup", method: "GET", path: "/v1/investor/{investor_id}", live: true, needs: ["investor_id"] },
-  { group: "Setup", method: "POST", path: "/v1/state_session" },
+  { group: "Session", method: "POST", path: "/v2/advice_session" },
   { group: "Session", method: "GET", path: "/v2/advice_session", live: true },
   { group: "Session", method: "GET", path: "/v2/advice_session/{session_id}", live: true, needs: ["session_id"] },
   { group: "Goals", method: "POST", path: "/v2/advice_session/{session_id}/goal" },

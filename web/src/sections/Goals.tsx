@@ -288,7 +288,7 @@ export function Goals({
           ))}
 
           <PayloadTabs
-            payload={{ advisor_notes: goalNotes, fields: infoBody }}
+            payload={{ advisor_notes: goalNotes, answers: infoBody }}
             code={goalInformationCode()}
             endpoint={{ method: "PATCH", path: "/v2/advice_session/{session_id}/goal/{goal_id}/information" }}
           />
@@ -306,10 +306,10 @@ export function Goals({
               disabled={!validGoalId}
               onRun={async () => {
                 const r = await run("GET", `/api/goals/${goalId}/information`);
-                const data = (r.body as { data?: { advisor_notes?: string | null; fields?: Record<string, unknown> } } | null)?.data;
+                const data = (r.body as { data?: { advisor_notes?: string | null; answers?: Record<string, unknown> } } | null)?.data;
                 setAdvisorNotes(data?.advisor_notes ?? "");
                 const vals: Record<string, string> = {};
-                for (const [k, v] of Object.entries(data?.fields ?? {})) if (v != null) vals[k] = String(v);
+                for (const [k, v] of Object.entries(data?.answers ?? {})) if (v != null) vals[k] = String(v);
                 setInfoValues(vals);
               }}
             >
@@ -320,7 +320,7 @@ export function Goals({
               onRun={() =>
                 run("PATCH", `/api/goals/${goalId}/information`, {
                   advisor_notes: goalNotes,
-                  fields: infoBody,
+                  answers: infoBody,
                 })
               }
             >

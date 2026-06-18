@@ -57,7 +57,13 @@ export function Setup({
   const [values, setValues] = useState<Record<string, string>>({ name: "Jane Doe" });
   const [investorId, setInvestorId] = useState("");
   const [sessionName, setSessionName] = useState("New advice session");
-  const [adviceType, setAdviceType] = useState("MiFIID II investment Advice");
+  const [adviceType, setAdviceType] = useState("mifid");
+  // Optional session fields.
+  const [externalStatus, setExternalStatus] = useState("");
+  const [redirectUrl, setRedirectUrl] = useState("");
+  const [surveyStatus, setSurveyStatus] = useState("");
+  const [surveyStatusMessage, setSurveyStatusMessage] = useState("");
+  const [createdRedirectUrl, setCreatedRedirectUrl] = useState("");
 
   useEffect(() => {
     if (!authed) {
@@ -112,9 +118,13 @@ export function Setup({
 
   const sessionBody = {
     advisor_id: advisorId,
+    investor_id: investorId,
     name: sessionName,
-    investor_id: investorId || undefined,
     advice_type: adviceType,
+    ...(externalStatus ? { external_status: externalStatus } : {}),
+    ...(redirectUrl ? { redirect_url: redirectUrl } : {}),
+    ...(surveyStatus ? { survey_status: surveyStatus } : {}),
+    ...(surveyStatusMessage ? { survey_status_message: { en: surveyStatusMessage } } : {}),
   };
 
   function renderField(f: ClientInfoField) {
@@ -167,7 +177,7 @@ export function Setup({
             { label: "Investor", value: "POST /v1/investor (country + investorType required)" },
             { label: "Fields", value: "settings → roboAdvice.clientInformation.{person,company}" },
             { label: "Countries", value: "settings → roboAdvice.countries.items" },
-            { label: "Session", value: "POST /v1/state_session (advisor_id + name required)" },
+            { label: "Session", value: "POST /v2/advice_session (advisor_id + investor_id + name required)" },
           ]}
         />
 
@@ -244,8 +254,8 @@ export function Setup({
           <div className="grid grid-cols-2 gap-2">
             <Input placeholder="session name" value={sessionName} onChange={(e) => setSessionName(e.target.value)} />
             <NativeSelect value={adviceType} onChange={(e) => setAdviceType(e.target.value)}>
-              <option value="MiFIID II investment Advice">MiFIID II investment Advice</option>
-              <option value="Order Execution">Order Execution</option>
+              <option value="mifid">MiFID (investment advice)</option>
+              <option value="order_execution">Order execution</option>
             </NativeSelect>
           </div>
           <div className="space-y-1.5">
@@ -257,21 +267,63 @@ export function Setup({
               onChange={(e) => setInvestorId(e.target.value)}
             />
           </div>
+
+          <details className="text-xs">
+            <summary className="cursor-pointer select-none text-muted-foreground">Optional fields</summary>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="space-y-1.5">
+                <Label>External status</Label>
+                <Input value={externalStatus} onChange={(e) => setExternalStatus(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Survey status</Label>
+                <NativeSelect value={surveyStatus} onChange={(e) => setSurveyStatus(e.target.value)}>
+                  <option value="">— none —</option>
+                  <option value="waiting_for_investor">waiting_for_investor</option>
+                  <option value="reminder_sent">reminder_sent</option>
+                  <option value="complete">complete</option>
+                  <option value="notification_error">notification_error</option>
+                </NativeSelect>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Redirect URL</Label>
+                <Input value={redirectUrl} onChange={(e) => setRedirectUrl(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Survey status message</Label>
+                <Input
+                  placeholder="sent as { en: … }"
+                  value={surveyStatusMessage}
+                  onChange={(e) => setSurveyStatusMessage(e.target.value)}
+                />
+              </div>
+            </div>
+          </details>
+
           <PayloadTabs
             payload={sessionBody}
             code={createSessionCode()}
-            endpoint={{ method: "POST", path: "/v1/state_session" }}
+            endpoint={{ method: "POST", path: "/v2/advice_session" }}
           />
           <RunButton
-            disabled={!advisorId}
+            disabled={!advisorId || !investorId}
             onRun={async () => {
               const r = await run("POST", "/api/sessions", sessionBody);
-              const sid = (r.body as { session_id?: string } | null)?.session_id;
-              if (sid) onSessionCreated(sid);
+              const data = (r.body as { data?: { session_id?: string; redirect_url?: string | null } } | null)?.data;
+              if (data?.session_id) onSessionCreated(data.session_id);
+              setCreatedRedirectUrl(data?.redirect_url ?? "");
             }}
           >
             Create session &amp; use it
           </RunButton>
+          {createdRedirectUrl && (
+            <p className="break-all text-xs text-muted-foreground">
+              redirect_url:{" "}
+              <a href={createdRedirectUrl} target="_blank" rel="noreferrer" className="underline">
+                {createdRedirectUrl}
+              </a>
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>

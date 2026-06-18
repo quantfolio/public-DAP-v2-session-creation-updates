@@ -6,7 +6,7 @@ import {
   getV1Investor,
   getV1InvestorByInvestorId,
   postV1Investor,
-  postV1StateSession,
+  postV2AdviceSession,
 } from "./client/sdk.gen.js";
 import { DEFAULT_SESSION_ID, DEFAULT_GOAL_TYPE } from "./constants.js";
 import { parseAnswers } from "./knowledge-and-experience.js";
@@ -208,9 +208,9 @@ router.get("/readme", async (_req, res) => {
   }
 });
 
-// --- Setup: advisors, investors, sessions (v1 `state` — no v2 equivalent) ----
+// --- Setup: advisors, investors (v1), session (v2) --------------------------
 type InvestorBody = NonNullable<Parameters<typeof postV1Investor>[0]>["body"];
-type SessionBody = NonNullable<Parameters<typeof postV1StateSession>[0]>["body"];
+type SessionBody = NonNullable<Parameters<typeof postV2AdviceSession>[0]>["body"];
 
 router.get("/advisors", async (_req, res) => {
   relay(res, await getV1Advisor());
@@ -225,10 +225,10 @@ router.post("/investors", async (req, res) => {
   relay(res, await postV1Investor({ body: (req.body ?? {}) as InvestorBody }), 201);
 });
 
-// Create an advice session. Body (CreateStateSessionPayload): requires `advisor_id`, `name`.
-// (v1 `state` — there is a beta POST /v2/advice_session, but it's not ready yet.)
+// Create an advice session (v2). Body (SessionCreateRequestSchemaV2): requires
+// `advisor_id`, `investor_id`, `name`; optional `advice_type` (mifid | order_execution).
 router.post("/sessions", async (req, res) => {
-  relay(res, await postV1StateSession({ body: (req.body ?? {}) as SessionBody }), 201);
+  relay(res, await postV2AdviceSession({ body: (req.body ?? {}) as SessionBody }), 201);
 });
 
 // Resolve the investor type ("person" | "company") of the active session's investor,
@@ -333,8 +333,8 @@ router.get("/goals/:goalId/information", async (req, res) => {
 // Body: { advisor_notes?: string | null, fields?: { [fieldCode]: value } }
 router.patch("/goals/:goalId/information", async (req, res) => {
   const body = req.body ?? {};
-  if (typeof body.fields !== "object" || body.fields === null || Array.isArray(body.fields)) {
-    res.status(400).json({ error: "`fields` must be an object keyed by field code" });
+  if (typeof body.answers !== "object" || body.answers === null || Array.isArray(body.answers)) {
+    res.status(400).json({ error: "`answers` must be an object keyed by field code" });
     return;
   }
 
@@ -342,7 +342,7 @@ router.patch("/goals/:goalId/information", async (req, res) => {
     path: { session_id: sessionId(req), goal_id: req.params.goalId },
     body: {
       advisor_notes: body.advisor_notes ?? null,
-      fields: body.fields,
+      answers: body.answers,
     },
   });
 

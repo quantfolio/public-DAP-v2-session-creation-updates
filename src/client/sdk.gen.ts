@@ -248,7 +248,7 @@ export const getV1ProductsAttachment = <ThrowOnError extends boolean = false>(op
 });
 
 /**
- * Uploads KIID document
+ * Lists all available KIID documents under the current customer scope
  */
 export const postV1ProductsAttachment = <ThrowOnError extends boolean = false>(options?: Options<PostV1ProductsAttachmentData, ThrowOnError>): RequestResult<PostV1ProductsAttachmentResponses, PostV1ProductsAttachmentErrors, ThrowOnError> => (options?.client ?? client).post<PostV1ProductsAttachmentResponses, PostV1ProductsAttachmentErrors, ThrowOnError>({
     ...formDataBodySerializer,
@@ -352,7 +352,7 @@ export const getV1Advisor = <ThrowOnError extends boolean = false>(options?: Opt
 /**
  * Return requested advisor by specific advisor_id
  *
- * Permissions required: state, advisor/id, delete
+ * Permissions required: state, advisor/id, get
  */
 export const getV1AdvisorByAdvisorId = <ThrowOnError extends boolean = false>(options: Options<GetV1AdvisorByAdvisorIdData, ThrowOnError>): RequestResult<GetV1AdvisorByAdvisorIdResponses, GetV1AdvisorByAdvisorIdErrors, ThrowOnError> => (options.client ?? client).get<GetV1AdvisorByAdvisorIdResponses, GetV1AdvisorByAdvisorIdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -508,10 +508,9 @@ export const deleteV1InvestorByInvestorIdAccountByAccountId = <ThrowOnError exte
 });
 
 /**
- * Allow hard deleting account by UUID for investor
+ * Return account by investor_id and account_id
  *
- * Permissions required: state, account/id, delete
- * Deleting account without possibility to restore it.
+ * Permissions required: state, account/id, get
  */
 export const getV1InvestorByInvestorIdAccountByAccountId = <ThrowOnError extends boolean = false>(options: Options<GetV1InvestorByInvestorIdAccountByAccountIdData, ThrowOnError>): RequestResult<GetV1InvestorByInvestorIdAccountByAccountIdResponses, GetV1InvestorByInvestorIdAccountByAccountIdErrors, ThrowOnError> => (options.client ?? client).get<GetV1InvestorByInvestorIdAccountByAccountIdResponses, GetV1InvestorByInvestorIdAccountByAccountIdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -692,9 +691,9 @@ export const deleteV1SessionBySessionIdGoalByGoalId = <ThrowOnError extends bool
 });
 
 /**
- * Allow deleting session goal
+ * Return session goal by specified id
  *
- * Permissions required: state, session_goal, delete
+ * Permissions required: state, session_goal, get
  */
 export const getV1SessionBySessionIdGoalByGoalId = <ThrowOnError extends boolean = false>(options: Options<GetV1SessionBySessionIdGoalByGoalIdData, ThrowOnError>): RequestResult<GetV1SessionBySessionIdGoalByGoalIdResponses, GetV1SessionBySessionIdGoalByGoalIdErrors, ThrowOnError> => (options.client ?? client).get<GetV1SessionBySessionIdGoalByGoalIdResponses, GetV1SessionBySessionIdGoalByGoalIdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -802,13 +801,16 @@ export const getV2AdviceSession = <ThrowOnError extends boolean = false>(options
 });
 
 /**
- * [BETA] Create a new MiFID advice session for an existing investor.
+ * [BETA] Start a new advice session for an existing investor.
  *
- * The new session's `advisorInput` payload is seeded with an empty
- * financial-situation block — every financial-situation field configured
- * for the investor's type (person/company), set to null — so a subsequent
- * `GET .../financial_situation` advertises the full set of fields a caller
- * can provide. `session_id` is optional and generated when omitted.
+ * Choose the `advice_type` to set the regulatory track for the session:
+ *
+ * - `mifid` — MiFID II investment advice: a full, personalised
+ * suitability assessment (purpose, risk, knowledge & experience, financial
+ * situation, sustainability) before a recommendation is given.
+ *
+ * - `order_execution` — order execution only: the investor places trades
+ * without a suitability assessment or personal recommendation.
  */
 export const postV2AdviceSession = <ThrowOnError extends boolean = false>(options?: Options<PostV2AdviceSessionData, ThrowOnError>): RequestResult<PostV2AdviceSessionResponses, PostV2AdviceSessionErrors, ThrowOnError> => (options?.client ?? client).post<PostV2AdviceSessionResponses, PostV2AdviceSessionErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -825,8 +827,6 @@ export const postV2AdviceSession = <ThrowOnError extends boolean = false>(option
  *
  * Important note(s) about the response:
  *
- * This endpoint only works for MiFID sessions.
- *
  * The `links` field contains URLs to different sections of the advice session.
  *
  * The `advisor_notes` field contains advisor notes for each section.
@@ -838,15 +838,7 @@ export const getV2AdviceSessionBySessionId = <ThrowOnError extends boolean = fal
 });
 
 /**
- * [BETA] Update basic information for a specific advice session
- *
- * Important note(s) about the request/response:
- *
- * This endpoint only works for MiFID sessions.
- *
- * Allows updating external_status (max 30 chars) and name (max 200 chars).
- *
- * When updating external_status, the external_status_log will be updated automatically.
+ * [BETA] Patch AdviceSession
  */
 export const patchV2AdviceSessionBySessionId = <ThrowOnError extends boolean = false>(options: Options<PatchV2AdviceSessionBySessionIdData, ThrowOnError>): RequestResult<PatchV2AdviceSessionBySessionIdResponses, PatchV2AdviceSessionBySessionIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchV2AdviceSessionBySessionIdResponses, PatchV2AdviceSessionBySessionIdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -978,9 +970,11 @@ export const deleteV2AdviceSessionBySessionIdGoalByGoalId = <ThrowOnError extend
 });
 
 /**
- * [BETA] Delete a goal from an advice session. Returns 204 on success.
+ * [BETA] Retrieve goal details for a specific goal in an advice session
  *
- * The session must be open; deleting a goal from a completed session is rejected.
+ * Important note(s) about the response:
+ *
+ * If a PDF is not generated yet - the `portfolio_data` will be `null`.
  */
 export const getV2AdviceSessionBySessionIdGoalByGoalId = <ThrowOnError extends boolean = false>(options: Options<GetV2AdviceSessionBySessionIdGoalByGoalIdData, ThrowOnError>): RequestResult<GetV2AdviceSessionBySessionIdGoalByGoalIdResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdErrors, ThrowOnError> => (options.client ?? client).get<GetV2AdviceSessionBySessionIdGoalByGoalIdResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -1009,7 +1003,12 @@ export const patchV2AdviceSessionBySessionIdGoalByGoalId = <ThrowOnError extends
 /**
  * [BETA] Read the goal-information sub-resource for a goal.
  *
- * answers and free-text advisor notes attached to a goal.
+ * `data.answers` holds the user-editable answers keyed by question code
+ * (`null` when unanswered); `data.advisor_notes` carries the section note.
+ * `meta.fields` describes the questions configured for the goal's type
+ * (`roboAdviceForm.goalInformation.fields`): each field's `label`,
+ * `options`, and any conditional dependents (carrying `depends_on`).
+ * Resolve an answer's display label from `meta.fields[].options`.
  */
 export const getV2AdviceSessionBySessionIdGoalByGoalIdInformation = <ThrowOnError extends boolean = false>(options: Options<GetV2AdviceSessionBySessionIdGoalByGoalIdInformationData, ThrowOnError>): RequestResult<GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors, ThrowOnError> => (options.client ?? client).get<GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses, GetV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

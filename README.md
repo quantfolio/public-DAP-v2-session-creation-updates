@@ -75,14 +75,17 @@ const investor = await fetch(`${BASE}/v1/investor`, {
   body: JSON.stringify({ name: "Jane Doe", investorType: "person", country: "BE", advisorId }),
 }).then((r) => r.json()); // → { id, ... }
 
-// create an advice session (advisor_id + name required)
-const session = await fetch(`${BASE}/v1/state_session`, {
+// create an advice session (v2; advisor_id + investor_id + name required)
+const session = await fetch(`${BASE}/v2/advice_session`, {
   method: "POST", headers: { ...auth, "Content-Type": "application/json" },
-  body: JSON.stringify({ advisor_id, name: "New advice session", investor_id: investor.id }),
-}).then((r) => r.json()); // → { session_id, ... }
+  body: JSON.stringify({
+    advisor_id, investor_id: investor.id, name: "New advice session",
+    advice_type: "mifid", // "mifid" | "order_execution"
+  }),
+}).then((r) => r.json()); // → { data: { session_id, ... } }
 ```
 
-`advisor_id` comes from `GET /v1/advisor`. Then pass `session.session_id` on each v2 sub‑resource call.
+`advisor_id` comes from `GET /v1/advisor`. Then pass `session.data.session_id` on each v2 sub‑resource call.
 
 ## Scope & coverage
 

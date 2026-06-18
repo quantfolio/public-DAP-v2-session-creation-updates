@@ -2218,22 +2218,60 @@ export type GoalIconOptionSchemaV2 = {
     readonly value: unknown;
 };
 
+export type GoalInformationDependsOnMetaSchemaV2 = {
+    readonly code: string;
+    readonly value: unknown;
+};
+
 export type GoalInformationDocumentSchemaV2 = {
     data: GoalInformationSchemaV2;
 };
 
+export type GoalInformationFieldMetaSchemaV2 = {
+    readonly code: string;
+    depends_on?: GoalInformationDependsOnMetaSchemaV2 | unknown;
+    readonly info: unknown;
+    readonly label: unknown;
+    readonly multiple: boolean;
+    readonly options: Array<GoalInformationOptionMetaSchemaV2>;
+    readonly order: number;
+    readonly popup_info: unknown;
+    readonly required: boolean;
+    readonly type: unknown;
+};
+
+export type GoalInformationMetaSchemaV2 = {
+    readonly fields: Array<GoalInformationFieldMetaSchemaV2>;
+};
+
+export type GoalInformationOptionMetaSchemaV2 = {
+    readonly label: unknown;
+    text_field?: GoalInformationTextFieldMetaSchemaV2 | unknown;
+    readonly value: unknown;
+};
+
+export type GoalInformationReadDocumentSchemaV2 = {
+    data: GoalInformationSchemaV2;
+    meta: GoalInformationMetaSchemaV2;
+};
+
 export type GoalInformationSchemaV2 = {
     advisor_notes?: unknown;
-    fields?: {
+    answers?: {
         [key: string]: unknown;
     };
 };
 
 export type GoalInformationSchemaV21 = {
     advisor_notes?: unknown;
-    fields?: {
+    answers?: {
         [key: string]: unknown;
     };
+};
+
+export type GoalInformationTextFieldMetaSchemaV2 = {
+    readonly code: string;
+    readonly required: boolean;
 };
 
 export type GoalMetaSchemaV2 = {
@@ -2445,13 +2483,18 @@ export type RecurringTransactionSchema = {
     account_id: string;
     account_name: string;
     account_number: string;
+    buy?: unknown;
     current_amount: number;
     direction: string;
     end_date: unknown;
     readonly frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
     isin: unknown;
     name: string;
+    order_value_type?: 'amount' | 'percent';
+    sell?: unknown;
     start_date: unknown;
+    switch?: unknown;
+    switch_to?: unknown;
     target_amount: number;
     transaction_amount: number;
     weight: number;
@@ -2540,22 +2583,29 @@ export type SessionCreateDocumentSchemaV2 = {
 };
 
 export type SessionCreateRequestSchemaV2 = {
+    advice_type: 'mifid' | 'order_execution';
     advisor_id: string;
+    external_status?: unknown;
     investor_id: string;
     name: string;
+    redirect_url?: unknown;
     session_id?: unknown;
+    survey_status?: 'waiting_for_investor' | 'reminder_sent' | 'complete' | 'notification_error';
+    survey_status_message?: unknown;
 };
 
 export type SessionCreateResponseSchemaV2 = {
-    readonly advice_type: 'MiFIID II investment Advice' | 'Order Execution';
+    readonly advice_type: 'mifid' | 'order_execution';
     readonly advisor_id: string;
     readonly investor_id: string;
     readonly name: string;
+    readonly redirect_url: unknown;
     readonly session_id: string;
     readonly status: 'open' | 'complete' | 'cancelled' | 'rejected';
 };
 
 export type SessionDataSchema = {
+    readonly advice_type: 'mifid' | 'order_execution';
     readonly advisor_id: string;
     advisor_notes: SessionAdvisorNotesSchema;
     readonly channel: string;
@@ -2567,9 +2617,11 @@ export type SessionDataSchema = {
     readonly investor_id: string;
     links: SessionLinksSchema;
     readonly name: string;
+    readonly redirect_url: unknown;
     readonly signature_status: unknown;
     readonly status: 'open' | 'complete' | 'cancelled' | 'rejected';
-    readonly survey_status: unknown;
+    readonly survey_status: 'waiting_for_investor' | 'reminder_sent' | 'complete' | 'notification_error';
+    readonly survey_status_message: unknown;
     readonly updated_at: string;
 };
 
@@ -2728,6 +2780,7 @@ export type SessionListAdvisorSchema = {
 };
 
 export type SessionListItemSchema = {
+    readonly advice_type: 'mifid' | 'order_execution';
     readonly advisor_id: string;
     readonly channel: string;
     readonly completed_at?: unknown;
@@ -2765,8 +2818,12 @@ export type SessionMetaSchema = {
 };
 
 export type SessionPatchRequestSchema = {
+    advice_type?: 'mifid' | 'order_execution';
     external_status?: unknown;
     name?: string;
+    redirect_url?: unknown;
+    survey_status?: 'waiting_for_investor' | 'reminder_sent' | 'complete' | 'notification_error';
+    survey_status_message?: unknown;
 };
 
 export type SessionTransactionsDataSchema = {
@@ -2910,6 +2967,7 @@ export type StateSessionCreateResponse = {
     last_activity_date?: string;
     readonly links?: unknown;
     name?: string;
+    redirect_url?: unknown;
     session_id?: string;
     signed?: 'waiting' | 'signed' | 'declined';
     readonly status?: unknown;
@@ -3050,6 +3108,12 @@ export type SustainabilitySchemaV21 = {
     preference_criteria: SustainabilityPreferenceSchemaV2 | unknown;
 };
 
+export type SwitchToTargetSchema = {
+    isin: string;
+    name: string;
+    percent: number;
+};
+
 export type TransactionHoldingSchema = {
     account_id: string;
     amount: number;
@@ -3064,10 +3128,15 @@ export type TransactionSchema = {
     account_id: string;
     account_name: string;
     account_number: string;
+    buy?: unknown;
     current_amount: number;
     direction: string;
     isin: unknown;
     name: string;
+    order_value_type?: 'amount' | 'percent';
+    sell?: unknown;
+    switch?: unknown;
+    switch_to?: unknown;
     target_amount: number;
     transaction_amount: number;
     weight: number;
@@ -3283,6 +3352,10 @@ export type FinancialSituationReadDocumentSchemaV2Writable = {
     data: FinancialSituationReadSchemaV2;
 };
 
+export type GoalInformationReadDocumentSchemaV2Writable = {
+    data: GoalInformationSchemaV2;
+};
+
 export type InvestorSearchResponseWritable = {
     investors?: Array<StateInvestorOutputWritable>;
 };
@@ -3300,12 +3373,17 @@ export type RecurringTransactionSchemaWritable = {
     account_id: string;
     account_name: string;
     account_number: string;
+    buy?: unknown;
     current_amount: number;
     direction: string;
     end_date: unknown;
     isin: unknown;
     name: string;
+    order_value_type?: 'amount' | 'percent';
+    sell?: unknown;
     start_date: unknown;
+    switch?: unknown;
+    switch_to?: unknown;
     target_amount: number;
     transaction_amount: number;
     weight: number;
@@ -3442,6 +3520,7 @@ export type StateSessionCreateResponseWritable = {
     investor_id?: string;
     last_activity_date?: string;
     name?: string;
+    redirect_url?: unknown;
     session_id?: string;
     signed?: 'waiting' | 'signed' | 'declined';
     survey_status?: unknown;
@@ -5847,7 +5926,12 @@ export type GetV2AdviceSessionBySessionIdFinancialSituationData = {
     path: {
         session_id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Language to fetch the data for (defaults to English if not selected)
+         */
+        language?: 'no' | 'da' | 'de' | 'en' | 'fi' | 'nl' | 'sv';
+    };
     url: '/v2/advice_session/{session_id}/financial_situation';
 };
 
@@ -6100,11 +6184,20 @@ export type GetV2AdviceSessionBySessionIdGoalByGoalIdInformationData = {
         session_id: string;
         goal_id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Language to fetch the data for (defaults to English if not selected)
+         */
+        language?: 'no' | 'da' | 'de' | 'en' | 'fi' | 'nl' | 'sv';
+    };
     url: '/v2/advice_session/{session_id}/goal/{goal_id}/information';
 };
 
 export type GetV2AdviceSessionBySessionIdGoalByGoalIdInformationErrors = {
+    /**
+     * Validation error
+     */
+    400: ValidationError;
     /**
      * Authentication error
      */
@@ -6121,7 +6214,7 @@ export type GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses = {
     /**
      * Successful response
      */
-    200: GoalInformationDocumentSchemaV2;
+    200: GoalInformationReadDocumentSchemaV2;
 };
 
 export type GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponse = GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses[keyof GetV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses];
@@ -6242,7 +6335,12 @@ export type GetV2AdviceSessionBySessionIdRiskQuestionData = {
     path: {
         session_id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Language to fetch the data for (defaults to English if not selected)
+         */
+        language?: 'no' | 'da' | 'de' | 'en' | 'fi' | 'nl' | 'sv';
+    };
     url: '/v2/advice_session/{session_id}/risk_question';
 };
 
@@ -6312,7 +6410,12 @@ export type GetV2AdviceSessionBySessionIdSustainabilityData = {
     path: {
         session_id: string;
     };
-    query?: never;
+    query?: {
+        /**
+         * Language to fetch the data for (defaults to English if not selected)
+         */
+        language?: 'no' | 'da' | 'de' | 'en' | 'fi' | 'nl' | 'sv';
+    };
     url: '/v2/advice_session/{session_id}/sustainability';
 };
 
