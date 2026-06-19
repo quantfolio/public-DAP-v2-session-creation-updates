@@ -316,6 +316,13 @@ export function Setup({
           >
             Create session &amp; use it
           </RunButton>
+          {(!advisorId || !investorId) && (
+            <p className="text-xs text-amber-700">
+              Requires {!advisorId && "an advisor (Load advisors above, then pick one)"}
+              {!advisorId && !investorId && " and "}
+              {!investorId && "an investor id (Create investor, or paste one)"}.
+            </p>
+          )}
           {createdRedirectUrl && (
             <p className="break-all text-xs text-muted-foreground">
               redirect_url:{" "}
