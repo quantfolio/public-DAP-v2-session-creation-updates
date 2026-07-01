@@ -131,12 +131,22 @@ export async function goalHorizonConfig(lang = "en"): Promise<HorizonOption[]> {
   }));
 }
 
+// Per-goal visibility for a client type: enabled (default) | disabled | hidden.
+export type GoalVisibility = "enabled" | "disabled" | "hidden";
+
 export interface GoalType {
   type: string;
   label: string;
   iconName: string;
   iconUrl: string;
+  // Visibility by client type; null in settings → "enabled".
+  person: GoalVisibility;
+  company: GoalVisibility;
+  coInvestor: GoalVisibility;
 }
+
+const asVisibility = (v: unknown): GoalVisibility =>
+  v === "hidden" || v === "disabled" ? v : "enabled";
 
 export async function goalTypesConfig(lang = "en"): Promise<GoalType[]> {
   const settings = await loadSettings();
@@ -151,11 +161,14 @@ export async function goalTypesConfig(lang = "en"): Promise<GoalType[]> {
       label: label(getValue(settings, `${base}.translations`), lang) || type,
       iconName: getValue<string>(settings, `${base}.iconName`) ?? "",
       iconUrl: getValue<string>(settings, `${base}.iconUrl`) ?? "",
+      person: asVisibility(getValue(settings, `${base}.person`)),
+      company: asVisibility(getValue(settings, `${base}.company`)),
+      coInvestor: asVisibility(getValue(settings, `${base}.coInvestor`)),
       order,
     });
   }
   found.sort((a, b) => a.order - b.order);
-  return found.map(({ type, label, iconName, iconUrl }) => ({ type, label, iconName, iconUrl }));
+  return found.map(({ order: _order, ...g }) => g);
 }
 
 export interface RiskOption {
@@ -308,6 +321,102 @@ export async function adviceInformationConfig(lang = "en"): Promise<AdviceInform
           }))
         : [],
     }));
+}
+
+// --- Advanced suitability (matrices) + knowledge quiz (settings-driven) ------
+export interface SuitabilityColumn {
+  id: number;
+  label: string;
+  description: string | null;
+}
+export interface SuitabilityTable {
+  key: string; // knowledge | experience | tradingAmount | custom1 | custom2
+  header: string;
+  columns: SuitabilityColumn[];
+}
+export interface QuizOption {
+  id: string;
+  label: string;
+  correct: boolean;
+}
+export interface QuizQuestion {
+  id: string;
+  label: string;
+  options: QuizOption[];
+}
+export interface QuizCategory {
+  id: string;
+  numberOfQuestionsToAsk: number;
+  questions: QuizQuestion[];
+}
+export interface QuizConfig {
+  enabled: boolean;
+  maxAttempts: number;
+  attemptResetDays: number;
+  wholeQuizRequired: boolean;
+  requiredChecks: string[];
+  checks: { id: string; categories: QuizCategory[] }[];
+}
+export interface AdvancedSuitabilityConfig {
+  enabled: boolean;
+  checks: { id: string; label: string }[]; // matrix rows (checksTranslations)
+  tables: SuitabilityTable[]; // enabled tables in tableOrder
+  quiz: QuizConfig | null;
+}
+
+export async function advancedSuitabilityConfig(lang = "en"): Promise<AdvancedSuitabilityConfig> {
+  const settings = await loadSettings();
+  const base = "roboAdviceForm.knowledgeAndExperience.advancedSuitability";
+  const g = <T = unknown>(name: string) => getValue<T>(settings, name);
+
+  const checks = (g<Record<string, unknown>[]>(`${base}.checksTranslations`) ?? []).map((c) => ({
+    id: String(c.id),
+    label: label(c.label, lang) || String(c.id),
+  }));
+
+  const order = g<string[]>(`${base}.tableOrder`) ?? [];
+  const tables: SuitabilityTable[] = order
+    .filter((key) => g<boolean>(`${base}.${key}.enabled`) === true)
+    .map((key) => ({
+      key,
+      header: label(g(`${base}.${key}.header`), lang),
+      columns: (g<Record<string, unknown>[]>(`${base}.${key}.tableHeaders`) ?? []).map((h) => ({
+        id: Number(h.id),
+        label: label(h.label, lang) || String(h.id),
+        description: h.description ? label(h.description, lang) : null,
+      })),
+    }));
+
+  const qb = `${base}.knowledgeAssessmentQuiz`;
+  const qpc = g<Record<string, { categories?: Record<string, unknown>[] }>>(`${qb}.questionsPerCheck`) ?? {};
+  const quiz: QuizConfig | null =
+    g<boolean>(`${qb}.enabled`) === true
+      ? {
+          enabled: true,
+          maxAttempts: Number(g(`${qb}.maxAttempts`) ?? 0),
+          attemptResetDays: Number(g(`${qb}.attemptResetDays`) ?? 0),
+          wholeQuizRequired: g<boolean>(`${qb}.wholeQuizRequired`) === true,
+          requiredChecks: (g<string[]>(`${qb}.requiredChecks`) ?? []).map(String),
+          checks: Object.entries(qpc).map(([id, v]) => ({
+            id,
+            categories: (v.categories ?? []).map((cat) => ({
+              id: String(cat.id),
+              numberOfQuestionsToAsk: Number(cat.numberOfQuestionsToAsk ?? 0),
+              questions: ((cat.questions as Record<string, unknown>[]) ?? []).map((q) => ({
+                id: String(q.id),
+                label: label(q.label, lang),
+                options: ((q.options as Record<string, unknown>[]) ?? []).map((o) => ({
+                  id: String(o.id),
+                  label: label(o.label, lang) || String(o.id),
+                  correct: o.correct === true,
+                })),
+              })),
+            })),
+          })),
+        }
+      : null;
+
+  return { enabled: g<boolean>(`${base}.enabled`) === true, checks, tables, quiz };
 }
 
 export interface FinancialSituationField {

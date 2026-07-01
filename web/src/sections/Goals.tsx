@@ -23,11 +23,22 @@ import { AdvisorNotesField, type AdvisorNoteFlag } from "@/components/AdvisorNot
 import { createGoalCode, goalInformationCode } from "@/lib/codegen";
 import { apiCall, type ApiResult } from "@/lib/api";
 
+type GoalVisibility = "enabled" | "disabled" | "hidden";
 interface GoalType {
   type: string;
   label: string;
   iconName: string;
   iconUrl: string;
+  person: GoalVisibility;
+  company: GoalVisibility;
+  coInvestor: GoalVisibility;
+}
+
+// Mirrors the front-end getGoalVisibilityForSession: company uses goal.company,
+// otherwise goal.person (co-investor sessions take the most restrictive — not
+// modelled here, so isCoInvestorSession is always false).
+function goalVisibility(g: GoalType, clientType: string): GoalVisibility {
+  return clientType === "company" ? g.company : g.person;
 }
 interface GoalInfoOption {
   value: string;
@@ -77,6 +88,7 @@ export function Goals({
   const [goalType, setGoalType] = useState("growYourWealth");
   const [icon, setIcon] = useState("");
   const [goalTypes, setGoalTypes] = useState<GoalType[]>([]);
+  const [clientType, setClientType] = useState("person");
   const [goalId, setGoalId] = useState("");
   const [advisorNotes, setAdvisorNotes] = useState("");
   const [infoFields, setInfoFields] = useState<GoalInfoField[]>([]);
@@ -84,10 +96,24 @@ export function Goals({
   // The goal's type — fetched from the goal GET — scopes which info fields apply.
   const [infoGoalType, setInfoGoalType] = useState("");
 
+  // Goal-information field config (settings-driven, scoped later by goal type).
+  useEffect(() => {
+    if (!authed) {
+      setInfoFields([]);
+      return;
+    }
+    fetch(`/api/config/goal-information?lang=${lang}`)
+      .then((r) => r.json())
+      .then((f) => setInfoFields(Array.isArray(f) ? f : []))
+      .catch(() => setInfoFields([]));
+  }, [authed, lang]);
+
+  // Goal types + horizons from tenant settings. Goal types carry per-client-type
+  // visibility (person/company/coInvestor) and their own icons.
   useEffect(() => {
     if (!authed) {
       setGoalTypes([]);
-      setInfoFields([]);
+      setHorizonOptions([]);
       return;
     }
     fetch(`/api/config/goal-types?lang=${lang}`)
@@ -96,13 +122,13 @@ export function Goals({
         const list = Array.isArray(types) ? types : [];
         setGoalTypes(list);
         const current = list.find((t) => t.type === goalType);
-        if (current) setIcon(current.iconUrl);
+        if (current) {
+          setIcon(current.iconUrl);
+          // Populate the default name from the goal label unless the advisor typed one.
+          setName((prev) => (prev === "" || prev === "New goal" ? current.label : prev));
+        }
       })
       .catch(() => setGoalTypes([]));
-    fetch(`/api/config/goal-information?lang=${lang}`)
-      .then((r) => r.json())
-      .then((f) => setInfoFields(Array.isArray(f) ? f : []))
-      .catch(() => setInfoFields([]));
     fetch(`/api/config/goal-horizons?lang=${lang}`)
       .then((r) => r.json())
       .then((h) => setHorizonOptions(Array.isArray(h) ? h : []))
@@ -110,11 +136,53 @@ export function Goals({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authed, lang]);
 
+  // Client type (person/company) of the active session's investor — limits which
+  // goal types can be selected.
+  useEffect(() => {
+    if (!authed || !sessionId) return;
+    let cancelled = false;
+    apiCall("GET", "/api/session-investor", sessionId).then((r) => {
+      if (cancelled) return;
+      const t = (r.body as { investorType?: string } | null)?.investorType;
+      setClientType(t === "company" ? "company" : "person");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [authed, sessionId]);
+
   function selectGoalType(type: string) {
     setGoalType(type);
     const t = goalTypes.find((g) => g.type === type);
-    if (t) setIcon(t.iconUrl);
+    if (t) {
+      setIcon(t.iconUrl);
+      // Match the front-end: picking a goal defaults the name to its label.
+      setName(t.label);
+    }
   }
+
+  // The icon list is the goal-type icons, so picking an icon selects that goal
+  // (syncing goal type + name), like clicking a goal icon in the real app.
+  function selectIcon(url: string) {
+    const t = goalTypes.find((g) => g.iconUrl === url);
+    if (t) selectGoalType(t.type);
+    else setIcon(url);
+  }
+
+  // Goal types selectable for the current client type (hidden ones dropped).
+  const visibleGoalTypes = goalTypes.filter((g) => goalVisibility(g, clientType) !== "hidden");
+
+  // If the selected type becomes unavailable for the client type, fall back to the
+  // first enabled one (and sync its icon).
+  useEffect(() => {
+    if (!goalTypes.length) return;
+    const current = goalTypes.find((g) => g.type === goalType);
+    if (!current || goalVisibility(current, clientType) === "hidden") {
+      const next = visibleGoalTypes.find((g) => goalVisibility(g, clientType) === "enabled") ?? visibleGoalTypes[0];
+      if (next) selectGoalType(next.type);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientType, goalTypes]);
 
   const validGoalId = UUID_RE.test(goalId);
 
@@ -136,7 +204,11 @@ export function Goals({
   }, [goalId, authed, validGoalId, sessionId]);
 
   const createBody = { name, horizon_value: Number(horizon), type: goalType, icon };
-  const iconOptions = goalTypes.filter((t) => t.iconUrl).map((t) => ({ url: t.iconUrl, name: t.iconName }));
+  // Goal icons are the icons of the (visible) goal types — not the generic
+  // roboAdvice.iconLibrary thematic set.
+  const iconOptions = visibleGoalTypes
+    .filter((t) => t.iconUrl)
+    .map((t) => ({ url: t.iconUrl, name: t.label }));
 
   // Goal-information fields are scoped to the resolved goal type, then expanded
   // with any conditional sub-fields based on the current selections.
@@ -160,10 +232,51 @@ export function Goals({
           <SourceInfo
             items={[
               { label: "Endpoint", value: "POST /v2/advice_session/{session_id}/goal" },
-              { label: "Goal types", value: "settings → roboAdviceForm.purposeAndRisk.goals.goal{N}.type" },
-              { label: "Icon", value: "settings → roboAdviceForm.purposeAndRisk.goals.goal{N}.iconUrl" },
+              { label: "Goal types", value: "settings → roboAdviceForm.purposeAndRisk.goals (type, icon, person/company visibility)" },
+              { label: "Visibility", value: "goal hidden/disabled per investor type (person vs company)" },
             ]}
           />
+          {/* Goal type + icon are the goal selection (they drive the name). */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="gtype">Goal type</Label>
+              <Select id="gtype" value={goalType} onChange={(e) => selectGoalType(e.target.value)}>
+                {visibleGoalTypes.length === 0 && <option value="growYourWealth">Grow your wealth</option>}
+                {visibleGoalTypes.map((t) => (
+                  <option
+                    key={t.type}
+                    value={t.type}
+                    disabled={goalVisibility(t, clientType) === "disabled"}
+                  >
+                    {t.label} ({t.type})
+                    {goalVisibility(t, clientType) === "disabled" ? " — n/a" : ""}
+                  </option>
+                ))}
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Filtered for <code>{clientType}</code> investor.
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="gicon">Icon</Label>
+              <IconSelect value={icon} onValueChange={selectIcon}>
+                <SelectTrigger id="gicon">
+                  <SelectValue placeholder="Select an icon" />
+                </SelectTrigger>
+                <SelectContent>
+                  {iconOptions.map((o) => (
+                    <SelectItem key={o.url} value={o.url}>
+                      <span className="flex items-center gap-2">
+                        <img src={o.url} alt="" className="size-4 object-contain" />
+                        {o.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </IconSelect>
+            </div>
+          </div>
+          {/* Name (auto-filled from the goal) + horizon. */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="gname">Name</Label>
@@ -179,37 +292,6 @@ export function Goals({
                   </option>
                 ))}
               </Select>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="gtype">Goal type</Label>
-              <Select id="gtype" value={goalType} onChange={(e) => selectGoalType(e.target.value)}>
-                {goalTypes.length === 0 && <option value="growYourWealth">Grow your wealth</option>}
-                {goalTypes.map((t) => (
-                  <option key={t.type} value={t.type}>
-                    {t.label} ({t.type})
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="gicon">Icon</Label>
-              <IconSelect value={icon} onValueChange={setIcon}>
-                <SelectTrigger id="gicon">
-                  <SelectValue placeholder="Select an icon" />
-                </SelectTrigger>
-                <SelectContent>
-                  {iconOptions.map((o) => (
-                    <SelectItem key={o.url} value={o.url}>
-                      <span className="flex items-center gap-2">
-                        <img src={o.url} alt="" className="size-4 object-contain" />
-                        {o.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </IconSelect>
             </div>
           </div>
           <PayloadTabs

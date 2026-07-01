@@ -21,6 +21,7 @@ import {
   goalHorizonConfig,
   countriesConfig,
   clientInformationConfig,
+  advancedSuitabilityConfig,
   languagesConfig,
   getAllSettings,
 } from "./dap-settings.js";
@@ -155,6 +156,14 @@ router.get("/config/advice-information", async (req, res) => {
 router.get("/config/financial-situation", async (req, res) => {
   try {
     res.json(await financialSituationConfig(langOf(req)));
+  } catch (err) {
+    res.status(502).json({ error: (err as Error).message });
+  }
+});
+
+router.get("/config/advanced-suitability", async (req, res) => {
+  try {
+    res.json(await advancedSuitabilityConfig(langOf(req)));
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }

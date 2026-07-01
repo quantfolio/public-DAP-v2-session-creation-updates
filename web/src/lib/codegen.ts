@@ -61,18 +61,21 @@ const body = {
 export function createGoalCode(): string {
   return join(
     PREAMBLE,
-    `// 2. Goal types + icons + allowed horizons (from settings)
-const goalTypes = Array.from({ length: 8 }, (_, i) => i + 1)
-  .map((n) => ({
-    type: setting(\`roboAdviceForm.purposeAndRisk.goals.goal\${n}.type\`) as string | null,
-    label: setting(\`roboAdviceForm.purposeAndRisk.goals.goal\${n}.translations\`)?.en,
-    iconUrl: setting(\`roboAdviceForm.purposeAndRisk.goals.goal\${n}.iconUrl\`) as string,
-  }))
-  .filter((g) => g.type);
+    `// 2. Goal types (+ their icons) and horizons from settings. Each goal carries
+//    per-client-type visibility (person / company / coInvestor).
+const goals = Object.values(setting("roboAdviceForm.purposeAndRisk.goals") ?? {}) as any[];
 const horizons = (setting("timeHorizonConfig.items") ?? [])
-  .map((h: any) => ({ value: h.riskHorizonValue, label: h.label?.en })); // value is 1..4`,
-    `// 3. Build the payload from the advisor's choices (icon is inferred from the type)
-const chosen = goalTypes.find((g) => g.type === "growYourWealth")!;
+  .map((h: any) => ({ value: h.riskHorizonValue, label: h.label?.en })); // value is 1..4
+
+// Limit goal types to the session investor's client type (person | company):
+// company uses goal.company, otherwise goal.person; null → "enabled", "hidden" → drop.
+const clientType = "person"; // from the investor attached to the session
+const vis = (g: any) => (clientType === "company" ? g.company : g.person) ?? "enabled";
+const available = goals
+  .filter((g) => g.type && vis(g) !== "hidden")
+  .sort((a, b) => a.order - b.order);`,
+    `// 3. Build the payload (icon comes from the chosen goal type)
+const chosen = available.find((g) => g.type === "growYourWealth") ?? available[0];
 const body = {
   name: "New goal",
   horizon_value: horizons[0].value, // one of the allowed ids, NOT a number of years
