@@ -23,6 +23,13 @@ import {
   putV2AdviceSessionBySessionIdRiskQuestion,
   getV2AdviceSessionBySessionIdSustainability,
   putV2AdviceSessionBySessionIdSustainability,
+  getV2AdviceSessionBySessionIdAdvancedSuitability,
+  putV2AdviceSessionBySessionIdAdvancedSuitability,
+  getV2AdviceSessionBySessionIdAdvancedSuitabilityStatus,
+  getV2AdviceSessionBySessionIdQuiz,
+  postV2AdviceSessionBySessionIdQuizAttempts,
+  getV2AdviceSessionBySessionIdInvestmentCapacity,
+  patchV2AdviceSessionBySessionIdInvestmentCapacity,
   getV2AdviceSessionBySessionIdTransactions,
 } from "./client/sdk.gen.js";
 
@@ -56,6 +63,17 @@ export const adviceSession = {
   setRiskQuestion: putV2AdviceSessionBySessionIdRiskQuestion,
   getSustainability: getV2AdviceSessionBySessionIdSustainability,
   setSustainability: putV2AdviceSessionBySessionIdSustainability,
+
+  // Advanced suitability + quiz
+  getAdvancedSuitability: getV2AdviceSessionBySessionIdAdvancedSuitability,
+  setAdvancedSuitability: putV2AdviceSessionBySessionIdAdvancedSuitability,
+  getAdvancedSuitabilityStatus: getV2AdviceSessionBySessionIdAdvancedSuitabilityStatus,
+  getQuiz: getV2AdviceSessionBySessionIdQuiz,
+  submitQuizAttempt: postV2AdviceSessionBySessionIdQuizAttempts,
+
+  // Investment capacity
+  getInvestmentCapacity: getV2AdviceSessionBySessionIdInvestmentCapacity,
+  updateInvestmentCapacity: patchV2AdviceSessionBySessionIdInvestmentCapacity,
 
   // Transactions
   getTransactions: getV2AdviceSessionBySessionIdTransactions,

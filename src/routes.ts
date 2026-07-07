@@ -21,7 +21,6 @@ import {
   goalHorizonConfig,
   countriesConfig,
   clientInformationConfig,
-  advancedSuitabilityConfig,
   languagesConfig,
   getAllSettings,
 } from "./dap-settings.js";
@@ -156,14 +155,6 @@ router.get("/config/advice-information", async (req, res) => {
 router.get("/config/financial-situation", async (req, res) => {
   try {
     res.json(await financialSituationConfig(langOf(req)));
-  } catch (err) {
-    res.status(502).json({ error: (err as Error).message });
-  }
-});
-
-router.get("/config/advanced-suitability", async (req, res) => {
-  try {
-    res.json(await advancedSuitabilityConfig(langOf(req)));
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }
@@ -505,6 +496,67 @@ router.put("/sustainability", async (req, res) => {
   });
 
   relay(res, { data, error, request, response });
+});
+
+// --- Advanced suitability (matrices) --------------------------------------
+router.get("/advanced-suitability", async (req, res) => {
+  relay(res, await adviceSession.getAdvancedSuitability({ path: { session_id: sessionId(req) } }));
+});
+
+// PUT body: { answers: { [table]: { [check]: optionId } }, checks_training: {...} }.
+router.put("/advanced-suitability", async (req, res) => {
+  const body = req.body ?? {};
+  relay(
+    res,
+    await adviceSession.setAdvancedSuitability({
+      path: { session_id: sessionId(req) },
+      body: { answers: body.answers ?? {}, checks_training: body.checks_training ?? {} },
+    }),
+  );
+});
+
+// Computed suitability result (per product).
+router.get("/advanced-suitability/status", async (req, res) => {
+  relay(res, await adviceSession.getAdvancedSuitabilityStatus({ path: { session_id: sessionId(req) } }));
+});
+
+// --- Knowledge assessment quiz --------------------------------------------
+router.get("/quiz", async (req, res) => {
+  relay(res, await adviceSession.getQuiz({ path: { session_id: sessionId(req) } }));
+});
+
+// Submit one attempt. Body: { check_id, investor_id, answers: [{ question_id, selected_option_id }] }.
+router.post("/quiz/attempts", async (req, res) => {
+  const body = req.body ?? {};
+  relay(
+    res,
+    await adviceSession.submitQuizAttempt({
+      path: { session_id: sessionId(req) },
+      body: {
+        check_id: body.check_id,
+        investor_id: body.investor_id,
+        answers: Array.isArray(body.answers) ? body.answers : [],
+      },
+    }),
+    201,
+  );
+});
+
+// --- Investment capacity --------------------------------------------------
+router.get("/investment-capacity", async (req, res) => {
+  relay(res, await adviceSession.getInvestmentCapacity({ path: { session_id: sessionId(req) } }));
+});
+
+// PATCH body: { investment_capacity: { income, expenses, surplus, buffer, ... } } (merged).
+router.patch("/investment-capacity", async (req, res) => {
+  const body = req.body ?? {};
+  relay(
+    res,
+    await adviceSession.updateInvestmentCapacity({
+      path: { session_id: sessionId(req) },
+      body: { investment_capacity: body.investment_capacity ?? null },
+    }),
+  );
 });
 
 // Fetch a single advice session by id.

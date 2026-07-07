@@ -32,6 +32,9 @@ const ROUTES: { path: string; session?: boolean }[] = [
   { path: "/api/knowledge-and-experience", session: true },
   { path: "/api/risk-question", session: true },
   { path: "/api/sustainability", session: true },
+  { path: "/api/advanced-suitability", session: true },
+  { path: "/api/quiz", session: true },
+  { path: "/api/investment-capacity", session: true },
 ];
 
 async function ensureAuth(): Promise<void> {

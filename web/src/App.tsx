@@ -24,6 +24,8 @@ import { AdviceInformation } from "@/sections/AdviceInformation";
 import { FinancialSituation } from "@/sections/FinancialSituation";
 import { KnowledgeExperience } from "@/sections/KnowledgeExperience";
 import { AdvancedSuitability } from "@/sections/AdvancedSuitability";
+import { Quiz } from "@/sections/Quiz";
+import { InvestmentCapacity } from "@/sections/InvestmentCapacity";
 import { RiskQuestion } from "@/sections/RiskQuestion";
 import { Sustainability } from "@/sections/Sustainability";
 import { Maximize2 } from "lucide-react";
@@ -204,7 +206,9 @@ export function App() {
           <Setup run={run} authed={authed} lang={lang} onSessionCreated={setSessionId} />
           <Goals run={run} authed={authed} lang={lang} notesFlag={notes.goalInformation} sessionId={sessionId} />
           <KnowledgeExperience run={run} notesFlag={notes.knowledgeAndExperience} />
-          <AdvancedSuitability authed={authed} lang={lang} />
+          <AdvancedSuitability run={run} sessionId={sessionId} />
+          <Quiz run={run} />
+          <InvestmentCapacity run={run} />
           <RiskQuestion run={run} authed={authed} lang={lang} notesFlag={notes.purposeAndRisk} />
           <AdviceInformation run={run} notesFlag={notes.adviceInformation} />
           <Sustainability run={run} authed={authed} lang={lang} notesFlag={notes.sustainabilityPreference} />

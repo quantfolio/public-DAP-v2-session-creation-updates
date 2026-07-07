@@ -1922,6 +1922,102 @@ export type AdaptationSchema = {
     name?: string;
 };
 
+export type AdvancedSuitabilityCheckMetaSchemaV2 = {
+    readonly id: string;
+    readonly label: unknown;
+};
+
+export type AdvancedSuitabilityDataSchemaV2 = {
+    readonly answers: {
+        [key: string]: {
+            [key: string]: unknown;
+        };
+    };
+    readonly checks_training: {
+        [key: string]: boolean;
+    };
+};
+
+export type AdvancedSuitabilityMetaSchemaV2 = {
+    readonly checks: Array<AdvancedSuitabilityCheckMetaSchemaV2>;
+    readonly enabled: boolean;
+    readonly table_order: Array<string>;
+    readonly tables: Array<AdvancedSuitabilityTableMetaSchemaV2>;
+};
+
+export type AdvancedSuitabilityOptionMetaSchemaV2 = {
+    readonly description: unknown;
+    readonly id: number;
+    readonly label: unknown;
+};
+
+export type AdvancedSuitabilityPutDocumentSchemaV2 = {
+    data: AdvancedSuitabilityPutSchemaV2;
+};
+
+export type AdvancedSuitabilityPutSchemaV2 = {
+    answers: {
+        [key: string]: {
+            [key: string]: unknown;
+        };
+    };
+    checks_training: {
+        [key: string]: boolean;
+    };
+};
+
+export type AdvancedSuitabilityPutSchemaV21 = {
+    answers: {
+        [key: string]: {
+            [key: string]: unknown;
+        };
+    };
+    checks_training: {
+        [key: string]: boolean;
+    };
+};
+
+export type AdvancedSuitabilityReadDocumentSchemaV2 = {
+    data: AdvancedSuitabilityDataSchemaV2;
+    meta: AdvancedSuitabilityMetaSchemaV2;
+};
+
+export type AdvancedSuitabilityStatusCheckDetailSchemaV2 = {
+    readonly check_id?: unknown;
+    readonly check_key?: unknown;
+    readonly score?: unknown;
+    readonly threshold?: unknown;
+};
+
+export type AdvancedSuitabilityStatusDataSchemaV2 = {
+    readonly products: Array<AdvancedSuitabilityStatusProductSchemaV2>;
+};
+
+export type AdvancedSuitabilityStatusDocumentSchemaV2 = {
+    data: AdvancedSuitabilityStatusDataSchemaV2;
+};
+
+export type AdvancedSuitabilityStatusInvestorCheckDetailSchemaV2 = {
+    readonly check_key?: unknown;
+    readonly input?: unknown;
+    readonly suitable?: unknown;
+    readonly threshold?: unknown;
+};
+
+export type AdvancedSuitabilityStatusProductSchemaV2 = {
+    readonly details: Array<AdvancedSuitabilityStatusCheckDetailSchemaV2>;
+    readonly id?: unknown;
+    readonly investor_check_details: Array<AdvancedSuitabilityStatusInvestorCheckDetailSchemaV2>;
+    readonly product_is_suitable?: unknown;
+    readonly product_is_suitable_in_portfolio?: unknown;
+};
+
+export type AdvancedSuitabilityTableMetaSchemaV2 = {
+    readonly label: unknown;
+    readonly name: string;
+    readonly options: Array<AdvancedSuitabilityOptionMetaSchemaV2>;
+};
+
 export type AdviceInformationAnswerInputSchemaV2 = {
     code: string;
     value: unknown;
@@ -2350,6 +2446,28 @@ export type InstrumentSuitabilityStatus = {
     productIsSuitable?: boolean;
 };
 
+export type InvestmentCapacityDocumentSchemaV2 = {
+    data: InvestmentCapacityReadSchemaV2;
+};
+
+export type InvestmentCapacityMetaSchemaV2 = {
+    readonly enabled: boolean;
+    readonly input_fields: Array<string>;
+};
+
+export type InvestmentCapacityReadDocumentSchemaV2 = {
+    data: InvestmentCapacityReadSchemaV2;
+    meta: InvestmentCapacityMetaSchemaV2;
+};
+
+export type InvestmentCapacityReadSchemaV2 = {
+    investment_capacity: unknown;
+};
+
+export type InvestmentCapacityUpdateSchemaV2 = {
+    investment_capacity: unknown;
+};
+
 export type InvestorSearchPayload = {
     idType: 'external_id' | 'ssn' | 'business_id';
     idValue: string;
@@ -2471,6 +2589,111 @@ export type PurposeAndRiskSchema = {
     experience?: unknown;
     riskStrategy?: number;
     suitability?: unknown;
+};
+
+export type QuizAttemptAnswerInputSchemaV2 = {
+    question_id: string;
+    selected_option_id: unknown;
+};
+
+export type QuizAttemptResultDocumentSchemaV2 = {
+    data: QuizAttemptResultSchemaV2;
+};
+
+export type QuizAttemptResultSchemaV2 = {
+    readonly aggregate_status: string;
+    readonly attempts_count: number;
+    availability: QuizAvailabilitySchemaV2;
+    readonly check_id: string;
+    readonly investor_id: string;
+    last_attempt: QuizLastAttemptSchemaV2;
+    readonly last_attempt_at: unknown;
+    readonly suitability_value: unknown;
+};
+
+export type QuizAttemptSubmitSchemaV2 = {
+    answers: Array<QuizAttemptAnswerInputSchemaV2>;
+    check_id: string;
+    investor_id: string;
+};
+
+export type QuizAvailabilitySchemaV2 = {
+    readonly attempts_remaining: number;
+    readonly can_attempt: boolean;
+    readonly cooldown_until: unknown;
+};
+
+export type QuizCategoryMetaSchemaV2 = {
+    readonly id: string;
+    readonly label: unknown;
+    readonly number_of_questions_to_ask: number;
+    readonly questions: Array<QuizQuestionMetaSchemaV2>;
+};
+
+export type QuizCheckMetaSchemaV2 = {
+    readonly categories: Array<QuizCategoryMetaSchemaV2>;
+    readonly check_id: string;
+};
+
+export type QuizCheckStateSchemaV2 = {
+    readonly aggregate_status: string;
+    readonly check_id: string;
+    readonly investors: Array<QuizInvestorStateSchemaV2>;
+    readonly suitability_value: unknown;
+};
+
+export type QuizDataSchemaV2 = {
+    readonly checks: Array<QuizCheckStateSchemaV2>;
+    readonly investors: Array<QuizInvestorSchemaV2>;
+};
+
+export type QuizGradedAnswerSchemaV2 = {
+    readonly correct: boolean;
+    readonly question_id: string;
+    readonly selected_option_id: unknown;
+};
+
+export type QuizInvestorSchemaV2 = {
+    readonly id: string;
+    readonly name: unknown;
+};
+
+export type QuizInvestorStateSchemaV2 = {
+    readonly attempts_count: number;
+    availability: QuizAvailabilitySchemaV2;
+    readonly investor_id: string;
+    readonly last_attempt_at: unknown;
+    readonly last_attempt_passed: unknown;
+};
+
+export type QuizLastAttemptSchemaV2 = {
+    readonly answers: Array<QuizGradedAnswerSchemaV2>;
+    readonly passed: boolean;
+};
+
+export type QuizMetaSchemaV2 = {
+    readonly attempt_reset_days: number;
+    readonly checks: Array<QuizCheckMetaSchemaV2>;
+    readonly enabled: boolean;
+    readonly max_attempts: number;
+    readonly required_checks: Array<string>;
+    readonly whole_quiz_required: boolean;
+};
+
+export type QuizOptionMetaSchemaV2 = {
+    readonly id: string;
+    readonly label: unknown;
+};
+
+export type QuizQuestionMetaSchemaV2 = {
+    readonly id: string;
+    readonly label: unknown;
+    readonly options: Array<QuizOptionMetaSchemaV2>;
+};
+
+export type QuizReadDocumentSchemaV2 = {
+    data: QuizDataSchemaV2;
+    meta: QuizMetaSchemaV2;
 };
 
 export type RecurringDepositMetaSchema = {
@@ -2763,13 +2986,18 @@ export type SessionInvestorPersonMetaSchema = {
 };
 
 export type SessionLinksSchema = {
-    advice_information: string;
-    advisory: string;
-    financial_situation: string;
-    knowledge_and_experience: string;
-    proposal: string;
-    purpose_and_risk: string;
-    sustainability: string;
+    advice_information?: string;
+    advisory?: string;
+    financial_situation?: string;
+    instruments?: string;
+    knowledge_and_experience?: string;
+    order?: string;
+    order_information?: string;
+    order_information_page_2?: string;
+    proposal?: string;
+    purpose_and_risk?: string;
+    sustainability?: string;
+    target_market_assessment?: string;
 };
 
 export type SessionListAdvisorSchema = {
@@ -3275,6 +3503,14 @@ export type CustomDataAndMetaSchemaWritable = {
     ticker: string;
 };
 
+export type AdvancedSuitabilityReadDocumentSchemaV2Writable = {
+    [key: string]: never;
+};
+
+export type AdvancedSuitabilityStatusDocumentSchemaV2Writable = {
+    [key: string]: never;
+};
+
 export type AdviceInformationDocumentSchemaV2Writable = {
     [key: string]: never;
 };
@@ -3356,6 +3592,10 @@ export type GoalInformationReadDocumentSchemaV2Writable = {
     data: GoalInformationSchemaV2;
 };
 
+export type InvestmentCapacityReadDocumentSchemaV2Writable = {
+    data: InvestmentCapacityReadSchemaV2;
+};
+
 export type InvestorSearchResponseWritable = {
     investors?: Array<StateInvestorOutputWritable>;
 };
@@ -3366,6 +3606,14 @@ export type KnowledgeAndExperienceReadDocumentSchemaV2Writable = {
 
 export type PortfolioDataItemWritable = {
     suitability?: ProductSuitability | unknown;
+};
+
+export type QuizAttemptResultDocumentSchemaV2Writable = {
+    [key: string]: never;
+};
+
+export type QuizReadDocumentSchemaV2Writable = {
+    [key: string]: never;
 };
 
 export type RecurringTransactionSchemaWritable = {
@@ -5846,6 +6094,121 @@ export type PatchV2AdviceSessionBySessionIdResponses = {
 
 export type PatchV2AdviceSessionBySessionIdResponse = PatchV2AdviceSessionBySessionIdResponses[keyof PatchV2AdviceSessionBySessionIdResponses];
 
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityData = {
+    body?: never;
+    path: {
+        session_id: string;
+    };
+    query?: {
+        /**
+         * Language to fetch the data for (defaults to English if not selected)
+         */
+        language?: 'no' | 'da' | 'de' | 'en' | 'fi' | 'nl' | 'sv';
+    };
+    url: '/v2/advice_session/{session_id}/advanced_suitability';
+};
+
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityErrors = {
+    /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
+     * Authentication error
+     */
+    401: HttpError;
+    /**
+     * Not found
+     */
+    404: HttpError;
+};
+
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityError = GetV2AdviceSessionBySessionIdAdvancedSuitabilityErrors[keyof GetV2AdviceSessionBySessionIdAdvancedSuitabilityErrors];
+
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityResponses = {
+    /**
+     * Successful response
+     */
+    200: AdvancedSuitabilityReadDocumentSchemaV2;
+};
+
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityResponse = GetV2AdviceSessionBySessionIdAdvancedSuitabilityResponses[keyof GetV2AdviceSessionBySessionIdAdvancedSuitabilityResponses];
+
+export type PutV2AdviceSessionBySessionIdAdvancedSuitabilityData = {
+    body?: AdvancedSuitabilityPutSchemaV21;
+    path: {
+        session_id: string;
+    };
+    query?: never;
+    url: '/v2/advice_session/{session_id}/advanced_suitability';
+};
+
+export type PutV2AdviceSessionBySessionIdAdvancedSuitabilityErrors = {
+    /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
+     * Authentication error
+     */
+    401: HttpError;
+    /**
+     * Not found
+     */
+    404: HttpError;
+};
+
+export type PutV2AdviceSessionBySessionIdAdvancedSuitabilityError = PutV2AdviceSessionBySessionIdAdvancedSuitabilityErrors[keyof PutV2AdviceSessionBySessionIdAdvancedSuitabilityErrors];
+
+export type PutV2AdviceSessionBySessionIdAdvancedSuitabilityResponses = {
+    /**
+     * Successful response
+     */
+    200: AdvancedSuitabilityPutDocumentSchemaV2;
+};
+
+export type PutV2AdviceSessionBySessionIdAdvancedSuitabilityResponse = PutV2AdviceSessionBySessionIdAdvancedSuitabilityResponses[keyof PutV2AdviceSessionBySessionIdAdvancedSuitabilityResponses];
+
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityStatusData = {
+    body?: never;
+    path: {
+        session_id: string;
+    };
+    query?: {
+        /**
+         * Language to fetch the data for (defaults to English if not selected)
+         */
+        language?: 'no' | 'da' | 'de' | 'en' | 'fi' | 'nl' | 'sv';
+    };
+    url: '/v2/advice_session/{session_id}/advanced_suitability/status';
+};
+
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityStatusErrors = {
+    /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
+     * Authentication error
+     */
+    401: HttpError;
+    /**
+     * Not found
+     */
+    404: HttpError;
+};
+
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityStatusError = GetV2AdviceSessionBySessionIdAdvancedSuitabilityStatusErrors[keyof GetV2AdviceSessionBySessionIdAdvancedSuitabilityStatusErrors];
+
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityStatusResponses = {
+    /**
+     * Successful response
+     */
+    200: AdvancedSuitabilityStatusDocumentSchemaV2;
+};
+
+export type GetV2AdviceSessionBySessionIdAdvancedSuitabilityStatusResponse = GetV2AdviceSessionBySessionIdAdvancedSuitabilityStatusResponses[keyof GetV2AdviceSessionBySessionIdAdvancedSuitabilityStatusResponses];
+
 export type GetV2AdviceSessionBySessionIdAdviceInformationData = {
     body?: never;
     path: {
@@ -6255,6 +6618,81 @@ export type PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses = {
 
 export type PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponse = PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses[keyof PatchV2AdviceSessionBySessionIdGoalByGoalIdInformationResponses];
 
+export type GetV2AdviceSessionBySessionIdInvestmentCapacityData = {
+    body?: never;
+    path: {
+        session_id: string;
+    };
+    query?: {
+        /**
+         * Language to fetch the data for (defaults to English if not selected)
+         */
+        language?: 'no' | 'da' | 'de' | 'en' | 'fi' | 'nl' | 'sv';
+    };
+    url: '/v2/advice_session/{session_id}/investment_capacity';
+};
+
+export type GetV2AdviceSessionBySessionIdInvestmentCapacityErrors = {
+    /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
+     * Authentication error
+     */
+    401: HttpError;
+    /**
+     * Not found
+     */
+    404: HttpError;
+};
+
+export type GetV2AdviceSessionBySessionIdInvestmentCapacityError = GetV2AdviceSessionBySessionIdInvestmentCapacityErrors[keyof GetV2AdviceSessionBySessionIdInvestmentCapacityErrors];
+
+export type GetV2AdviceSessionBySessionIdInvestmentCapacityResponses = {
+    /**
+     * Successful response
+     */
+    200: InvestmentCapacityReadDocumentSchemaV2;
+};
+
+export type GetV2AdviceSessionBySessionIdInvestmentCapacityResponse = GetV2AdviceSessionBySessionIdInvestmentCapacityResponses[keyof GetV2AdviceSessionBySessionIdInvestmentCapacityResponses];
+
+export type PatchV2AdviceSessionBySessionIdInvestmentCapacityData = {
+    body?: InvestmentCapacityUpdateSchemaV2;
+    path: {
+        session_id: string;
+    };
+    query?: never;
+    url: '/v2/advice_session/{session_id}/investment_capacity';
+};
+
+export type PatchV2AdviceSessionBySessionIdInvestmentCapacityErrors = {
+    /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
+     * Authentication error
+     */
+    401: HttpError;
+    /**
+     * Not found
+     */
+    404: HttpError;
+};
+
+export type PatchV2AdviceSessionBySessionIdInvestmentCapacityError = PatchV2AdviceSessionBySessionIdInvestmentCapacityErrors[keyof PatchV2AdviceSessionBySessionIdInvestmentCapacityErrors];
+
+export type PatchV2AdviceSessionBySessionIdInvestmentCapacityResponses = {
+    /**
+     * Successful response
+     */
+    200: InvestmentCapacityDocumentSchemaV2;
+};
+
+export type PatchV2AdviceSessionBySessionIdInvestmentCapacityResponse = PatchV2AdviceSessionBySessionIdInvestmentCapacityResponses[keyof PatchV2AdviceSessionBySessionIdInvestmentCapacityResponses];
+
 export type GetV2AdviceSessionBySessionIdKnowledgeAndExperienceData = {
     body?: never;
     path: {
@@ -6329,6 +6767,81 @@ export type PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses = {
 };
 
 export type PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponse = PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses[keyof PutV2AdviceSessionBySessionIdKnowledgeAndExperienceResponses];
+
+export type GetV2AdviceSessionBySessionIdQuizData = {
+    body?: never;
+    path: {
+        session_id: string;
+    };
+    query?: {
+        /**
+         * Language to fetch the data for (defaults to English if not selected)
+         */
+        language?: 'no' | 'da' | 'de' | 'en' | 'fi' | 'nl' | 'sv';
+    };
+    url: '/v2/advice_session/{session_id}/quiz';
+};
+
+export type GetV2AdviceSessionBySessionIdQuizErrors = {
+    /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
+     * Authentication error
+     */
+    401: HttpError;
+    /**
+     * Not found
+     */
+    404: HttpError;
+};
+
+export type GetV2AdviceSessionBySessionIdQuizError = GetV2AdviceSessionBySessionIdQuizErrors[keyof GetV2AdviceSessionBySessionIdQuizErrors];
+
+export type GetV2AdviceSessionBySessionIdQuizResponses = {
+    /**
+     * Successful response
+     */
+    200: QuizReadDocumentSchemaV2;
+};
+
+export type GetV2AdviceSessionBySessionIdQuizResponse = GetV2AdviceSessionBySessionIdQuizResponses[keyof GetV2AdviceSessionBySessionIdQuizResponses];
+
+export type PostV2AdviceSessionBySessionIdQuizAttemptsData = {
+    body?: QuizAttemptSubmitSchemaV2;
+    path: {
+        session_id: string;
+    };
+    query?: never;
+    url: '/v2/advice_session/{session_id}/quiz/attempts';
+};
+
+export type PostV2AdviceSessionBySessionIdQuizAttemptsErrors = {
+    /**
+     * Validation error
+     */
+    400: ValidationError;
+    /**
+     * Authentication error
+     */
+    401: HttpError;
+    /**
+     * Not found
+     */
+    404: HttpError;
+};
+
+export type PostV2AdviceSessionBySessionIdQuizAttemptsError = PostV2AdviceSessionBySessionIdQuizAttemptsErrors[keyof PostV2AdviceSessionBySessionIdQuizAttemptsErrors];
+
+export type PostV2AdviceSessionBySessionIdQuizAttemptsResponses = {
+    /**
+     * Successful response
+     */
+    200: QuizAttemptResultDocumentSchemaV2;
+};
+
+export type PostV2AdviceSessionBySessionIdQuizAttemptsResponse = PostV2AdviceSessionBySessionIdQuizAttemptsResponses[keyof PostV2AdviceSessionBySessionIdQuizAttemptsResponses];
 
 export type GetV2AdviceSessionBySessionIdRiskQuestionData = {
     body?: never;

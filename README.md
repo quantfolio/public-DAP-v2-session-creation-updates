@@ -89,7 +89,7 @@ const session = await fetch(`${BASE}/v2/advice_session`, {
 
 ## Scope & coverage
 
-This tool covers the **advice‑session journey**: create investor/session, then goals, goal information, knowledge & experience, risk question, advice information, sustainability, and financial situation — plus the settings and categories that drive them.
+This tool covers the **advice‑session journey**: create investor/session, then goals, goal information, knowledge & experience, risk question, advice information, sustainability, financial situation, advanced suitability, the knowledge quiz, and investment capacity — plus the settings and categories that drive them.
 
 It does **not** cover the rest of the DeepAlpha API (analyze, robo, proposal/order, webhooks, products, timeseries, documents). Those follow the same auth + settings patterns shown here.
 
@@ -116,6 +116,9 @@ All advice‑session sub‑resources are under `/v2/advice_session/{session_id}/
 | `advice_information` | GET, PATCH | the GET response (`meta.fields`) |
 | `sustainability` | GET, PUT | settings (exclusion criteria, alignment criteria) |
 | `financial_situation` | GET, PATCH | settings (fields) + `/v2/categories` (asset classes) |
+| `advanced_suitability` (+ `/status`) | GET, PUT | GET response → `meta.tables` (columns) + `meta.checks` (rows) |
+| `quiz` (+ `/quiz/attempts`) | GET, POST | GET response → `meta.checks[].categories[].questions` (graded server-side) |
+| `investment_capacity` | GET, PATCH | GET response → `meta.input_fields` |
 
 ### Goals
 
